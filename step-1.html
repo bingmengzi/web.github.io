@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字1到5计数游戏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #ff6f61;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .item-display {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #333;
+        }
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .number-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .number-btn:hover {
+            background-color: #45a049;
+        }
+        .number-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .feedback {
+            margin: 20px 0;
+            font-size: 1.2em;
+            min-height: 30px;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        #nextBtn {
+            display: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #nextBtn:hover {
+            background-color: #007B9E;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>认识数字1到5</h1>
+        <p>数一数下面物品的数量，点击正确的数字。</p>
+        <div id="itemDisplay" class="item-display">加载中...</div>
+        <div class="buttons">
+            <button class="number-btn" data-number="1">1</button>
+            <button class="number-btn" data-number="2">2</button>
+            <button class="number-btn" data-number="3">3</button>
+            <button class="number-btn" data-number="4">4</button>
+            <button class="number-btn" data-number="5">5</button>
+        </div>
+        <div id="feedback" class="feedback"></div>
+        <button id="nextBtn">下一个</button>
+    </div>
+    <script>
+        const items = [
+            { text: "🏠 房屋", count: 1 },
+            { text: "🐕 狗", count: 1 },
+            { text: "🦢🦢 鹅", count: 2 },
+            { text: "🪑🪑 椅子", count: 2 },
+            { text: "🐦🐦🐦 鸟", count: 3 },
+            { text: "🥕🥕🥕 萝卜", count: 3 },
+            { text: "🌻🌻🌻🌻 向日葵", count: 4 },
+            { text: "🎃🎃🎃🎃 南瓜", count: 4 },
+            { text: "🦆🦆🦆🦆🦆 鸭子", count: 5 },
+            { text: "🌽🌽🌽🌽🌽 玉米", count: 5 }
+        ];
+        let currentIndex = 0;
+        const itemDisplay = document.getElementById('itemDisplay');
+        const feedback = document.getElementById('feedback');
+        const nextBtn = document.getElementById('nextBtn');
+        const numberBtns = document.querySelectorAll('.number-btn');
+        
+        function showItem(index) {
+            if (index >= items.length) {
+                itemDisplay.textContent = "完成！你认识了所有数字1到5！";
+                document.querySelector('.buttons').style.display = 'none';
+                nextBtn.style.display = 'none';
+                feedback.textContent = "";
+                return;
+            }
+            const item = items[index];
+            itemDisplay.textContent = item.text;
+            feedback.textContent = "";
+            feedback.className = "feedback";
+            nextBtn.style.display = 'none';
+            numberBtns.forEach(btn => {
+                btn.disabled = false;
+                btn.style.backgroundColor = '#4CAF50';
+            });
+        }
+        
+        numberBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const selectedNumber = parseInt(this.getAttribute('data-number'));
+                const correctNumber = items[currentIndex].count;
+                if (selectedNumber === correctNumber) {
+                    feedback.textContent = "正确！";
+                    feedback.className = "feedback correct";
+                    numberBtns.forEach(btn => btn.disabled = true);
+                    nextBtn.style.display = 'inline-block';
+                } else {
+                    feedback.textContent = "再试一次？";
+                    feedback.className = "feedback incorrect";
+                }
+            });
+        });
+        
+        nextBtn.addEventListener('click', function() {
+            currentIndex++;
+            showItem(currentIndex);
+        });
+        
+        showItem(currentIndex);
+    </script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>拨一拨，数一数</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #e0f7ff 0%, #fff6e0 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            background-color: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 100, 200, 0.15);
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 5px solid #4a9eff;
+        }
+        h1 {
+            color: #ff6b8b;
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 0px #ffe6ec;
+        }
+        .instructions {
+            background-color: #f0f9ff;
+            border-left: 6px solid #4a9eff;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            text-align: left;
+            color: #0057a3;
+        }
+        .bead-display-area {
+            background: linear-gradient(to bottom, #fffaf0, #f0f8ff);
+            border: 4px dashed #a0d8ff;
+            border-radius: 20px;
+            min-height: 180px;
+            margin: 25px 0;
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bead-display-area:hover {
+            background-color: #f8fdff;
+            border-color: #80c8ff;
+        }
+        .bead {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ff9e6d, #ff6b8b);
+            box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1), 0 4px 8px rgba(255,107,139,0.3);
+            animation: pop-in 0.2s ease-out;
+        }
+        @keyframes pop-in {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .counter-display {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .counter-box {
+            background: linear-gradient(145deg, #6bcbff, #4a9eff);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            min-width: 120px;
+            box-shadow: 0 6px 0 #2d7acc;
+        }
+        .counter-value {
+            font-size: 3rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        .counter-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .feedback {
+            font-size: 1.8rem;
+            font-weight: bold;
+            min-height: 2.5rem;
+            margin: 15px 0;
+            color: #ff6b8b;
+            transition: all 0.3s;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            padding: 14px 28px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.1);
+        }
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.1);
+        }
+        #addBtn {
+            background: linear-gradient(to right, #6bff8d, #4ae87c);
+            color: #006622;
+        }
+        #addBtn:hover {
+            background: linear-gradient(to right, #5ae87c, #3ad86c);
+        }
+        #resetBtn {
+            background: linear-gradient(to right, #ffb86b, #ff9e4a);
+            color: #663300;
+        }
+        #resetBtn:hover {
+            background: linear-gradient(to right, #ffa84a, #ff8e3a);
+        }
+        .limit-message {
+            color: #ff4444;
+            font-weight: bold;
+            margin-top: 10px;
+            min-height: 1.5rem;
+            font-size: 1.1rem;
+        }
+        .footer-note {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>拨一拨，数一数</h1>
+        <div class="instructions">
+            <p><strong>活动说明：</strong>点击“拨一个珠子”按钮或下方的珠子区域，模拟拨动珠子。数一数珠子的数量，并说出对应的数字。最多可以拨5个珠子哦！</p>
+        </div>
+
+        <div class="counter-display">
+            <div class="counter-box">
+                <div class="counter-value" id="numberDisplay">0</div>
+                <div class="counter-label">数字</div>
+            </div>
+            <div class="counter-box">
+                <div class="counter-value" id="countDisplay">0</div>
+                <div class="counter-label">珠子数量</div>
+            </div>
+        </div>
+
+        <div class="feedback" id="feedback">
+            请开始拨动珠子吧！
+        </div>
+
+        <div class="bead-display-area" id="beadArea" title="点击这里也可以拨动珠子">
+            <!-- 珠子会动态添加到这里 -->
+            <p style="color: #888; font-size: 1.1rem;">珠子将出现在这里</p>
+        </div>
+
+        <div class="limit-message" id="limitMessage"></div>
+
+        <div class="controls">
+            <button id="addBtn">拨一个珠子</button>
+            <button id="resetBtn">全部拨回</button>
+        </div>
+
+        <div class="footer-note">
+            设计意图：通过模拟拨珠操作，理解数字与数量的对应关系。
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+            const MAX_BEADS = 5;
+            let currentBeadCount = 0;
+
+            const numberDisplay = document.getElementById('numberDisplay');
+            const countDisplay = document.getElementById('countDisplay');
+            const feedback = document.getElementById('feedback');
+            const beadArea = document.getElementById('beadArea');
+            const addBtn = document.getElementById('addBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const limitMessage = document.getElementById('limitMessage');
+
+            const numberWords = ["零", "一", "二", "三", "四", "五"];
+            const feedbackMessages = [
+                "请开始拨动珠子吧！",
+                "拨了1颗珠子，这是数字1！",
+                "拨了2颗珠子，这是数字2！",
+                "拨了3颗珠子，这是数字3！",
+                "拨了4颗珠子，这是数字4！",
+                "拨了5颗珠子，这是数字5！"
+            ];
+
+            function updateDisplay() {
+                numberDisplay.textContent = currentBeadCount;
+                countDisplay.textContent = currentBeadCount;
+                feedback.textContent = feedbackMessages[currentBeadCount];
+
+                if (currentBeadCount >= MAX_BEADS) {
+                    limitMessage.textContent = `太棒了！你已经拨了${MAX_BEADS}个珠子。试试“全部拨回”重新开始吧！`;
+                    addBtn.disabled = true;
+                    addBtn.style.opacity = '0.6';
+                    addBtn.style.cursor = 'not-allowed';
+                } else {
+                    limitMessage.textContent = '';
+                    addBtn.disabled = false;
+                    addBtn.style.opacity = '1';
+                    addBtn.style.cursor = 'pointer';
+                }
+            }
+
+            function addBead() {
+                if (currentBeadCount >= MAX_BEADS) return;
+
+                currentBeadCount++;
+                const bead = document.createElement('div');
+                bead.className = 'bead';
+                bead.setAttribute('role', 'img');
+                bead.setAttribute('aria-label', '彩色珠子');
+                beadArea.appendChild(bead);
+                // 移除初始提示文字
+                const prompt = beadArea.querySelector('p');
+                if (prompt) prompt.remove();
+
+                updateDisplay();
+            }
+
+            function resetAll() {
+                currentBeadCount = 0;
+                beadArea.innerHTML = '<p style="color: #888; font-size: 1.1rem;">珠子将出现在这里</p>';
+                updateDisplay();
+            }
+
+            addBtn.addEventListener('click', addBead);
+            resetBtn.addEventListener('click', resetAll);
+            beadArea.addEventListener('click', addBead);
+
+            updateDisplay();
+        })();
+    </script>
+</body>
+</html>

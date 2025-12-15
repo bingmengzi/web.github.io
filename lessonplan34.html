@@ -1,0 +1,3046 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1-5的认识 | 完整教案多模态集成方案</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --primary-light: #e8f0fe;
+            --secondary: #38b2ac;
+            --accent: #ed64a6;
+            --text-dark: #2d3748;
+            --text-medium: #4a5568;
+            --text-light: #718096;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+            --radius: 8px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background-color: #f8fafc;
+            color: var(--text-dark);
+            line-height: 1.8;
+            font-size: 1.05rem;
+        }
+        
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 左侧导航栏 */
+        .left-nav {
+            width: 250px;
+            background-color: white;
+            border-right: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+        }
+        
+        .nav-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: center;
+        }
+        
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .nav-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-medium);
+        }
+        
+        .nav-links {
+            padding: 20px 0;
+        }
+        
+        .nav-section {
+            padding: 0;
+        }
+        
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--text-medium);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+            position: relative;
+        }
+        
+        .nav-link:hover {
+            background-color: var(--primary-light);
+            color: var(--primary);
+        }
+        
+        .nav-link.active {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-left-color: var(--primary);
+            font-weight: 500;
+        }
+        
+        .nav-link i {
+            width: 20px;
+            margin-right: 12px;
+            font-size: 1rem;
+            text-align: center;
+        }
+        
+        .nav-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 15px 20px;
+        }
+        
+        /* 右侧主内容区 */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            max-width: calc(100% - 250px);
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px 40px 60px;
+        }
+        
+        /* 头部 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .lesson-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .lesson-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background-color: var(--secondary);
+            border-radius: 2px;
+        }
+        
+        .lesson-subtitle {
+            font-size: 1rem;
+            color: var(--text-medium);
+        }
+        
+        /* 教案内容 */
+        .lesson-content {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+        
+        .section {
+            position: relative;
+            scroll-margin-top: 20px;
+        }
+        
+        .section-header {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        .section-body {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+        
+        .text-content {
+            color: var(--text-dark);
+        }
+        
+        .text-content p {
+            margin-bottom: 20px;
+        }
+        
+        .text-content h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 25px 0 15px;
+            color: var(--text-dark);
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
+        
+        /* 教学过程特殊样式 */
+        .teaching-process {
+            counter-reset: step-counter;
+        }
+        
+        .process-step {
+            position: relative;
+            margin-bottom: 35px;
+            padding-bottom: 35px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .process-step:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .step-header {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .step-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .step-title::before {
+            counter-increment: step-counter;
+            content: counter(step-counter, decimal) "、";
+            font-weight: 700;
+        }
+        
+        .step-time {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .activity-type {
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .activity-type::before {
+            content: "▶";
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+        
+        .activity-desc {
+            margin-bottom: 15px;
+            color: var(--text-medium);
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .activity-desc::before {
+            color: var(--secondary);
+            position: absolute;
+            left: 0;
+        }
+        
+        /* 文内资源链接 - 核心设计 */
+        .inline-resource {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 5px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            font-family: 'Noto Sans SC', sans-serif;
+            margin: 0 3px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .inline-resource:hover {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(74, 111, 165, 0.2);
+        }
+        
+        .inline-resource i {
+            font-size: 0.9rem;
+        }
+        
+        /* 资源侧边栏 */
+        .resource-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 450px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -2px 0 16px rgba(0, 0, 0, 0.1);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .resource-sidebar.active {
+            transform: translateX(0);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #2c5282 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .close-sidebar {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+        
+        .close-sidebar:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+        }
+        
+        /* 教学重点/难点样式 */
+        .emphasis {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 0 var(--radius) var(--radius) 0;
+        }
+        
+        /* 游戏和互动内容样式 */
+        .interactive-section {
+            margin-bottom: 30px;
+        }
+        
+        .interactive-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .interactive-title i {
+            font-size: 1rem;
+        }
+        
+        /* 计数游戏 */
+        .counting-game {
+            background-color: #f0f9ff;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #bae6fd;
+        }
+        
+        .game-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .game-objects {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .game-object {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            background-color: white;
+            border-radius: 50%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .game-object:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .game-btn {
+            padding: 10px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+        
+        .game-btn:hover {
+            background-color: #2c5282;
+        }
+        
+        .game-btn.secondary {
+            background-color: var(--secondary);
+        }
+        
+        .game-btn.secondary:hover {
+            background-color: #2c7a7b;
+        }
+        
+        .game-result {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: white;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+            color: var(--text-dark);
+            min-height: 20px;
+        }
+        
+        /* 连线游戏 */
+        .matching-game {
+            background-color: #f0fff4;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #c6f6d5;
+        }
+        
+        .matching-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .numbers-side, .objects-side {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .number-item, .object-item {
+            padding: 12px 20px;
+            background-color: white;
+            border-radius: var(--radius);
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .number-item {
+            color: var(--primary);
+            border: 2px solid var(--primary-light);
+        }
+        
+        .object-item {
+            color: var(--secondary);
+            border: 2px solid #c6f6d5;
+        }
+        
+        .number-item:hover, .object-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .number-item.selected, .object-item.selected {
+            background-color: var(--primary-light);
+            border-color: var(--primary);
+        }
+        
+        .matching-line-container {
+            position: relative;
+            height: 200px;
+            margin: 20px 0;
+        }
+        
+        .matching-line {
+            position: absolute;
+            background-color: var(--accent);
+            height: 3px;
+            transform-origin: left center;
+            z-index: 1;
+        }
+        
+        /* 图片展示 */
+        .image-gallery {
+            background-color: #faf5ff;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #e9d8fd;
+        }
+        
+        .gallery-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #805ad5;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .gallery-item {
+            background-color: white;
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            cursor: pointer;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .gallery-img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            background-color: #f7fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary);
+        }
+        
+        .gallery-label {
+            padding: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-medium);
+            background-color: white;
+        }
+        
+        /* 数字书写练习 */
+        .writing-practice {
+            background-color: #fff5f5;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #fed7d7;
+        }
+        
+        .writing-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .writing-canvas {
+            width: 100%;
+            height: 150px;
+            background-color: white;
+            border-radius: var(--radius);
+            border: 2px solid var(--border-color);
+            cursor: crosshair;
+            touch-action: none;
+        }
+        
+        .writing-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .writing-number-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            font-weight: bold;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        
+        .writing-number-btn:hover {
+            background-color: #2c5282;
+            transform: scale(1.1);
+        }
+        
+        /* 拨珠器模拟 */
+        .abacus-simulator {
+            background-color: #fefce8;
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #fde68a;
+        }
+        
+        .abacus-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d97706;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .abacus-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .abacus-frame {
+            width: 100%;
+            height: 100px;
+            background-color: #854d0e;
+            border-radius: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .abacus-rod {
+            width: 90%;
+            height: 4px;
+            background-color: #fef3c7;
+            position: relative;
+        }
+        
+        .abacus-bead {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: #f59e0b;
+            border-radius: 50%;
+            top: -13px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .abacus-bead:hover {
+            background-color: #d97706;
+            transform: scale(1.1);
+        }
+        
+        .abacus-bead.active {
+            background-color: #dc2626;
+        }
+        
+        .abacus-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .abacus-count-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-top: 10px;
+        }
+        
+        /* 资源全局入口 */
+        .resource-global-entry {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary), #2c5282);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(74, 111, 165, 0.3);
+            transition: var(--transition);
+            z-index: 999;
+        }
+        
+        .resource-global-entry:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 10px 25px rgba(74, 111, 165, 0.4);
+        }
+        
+        /* 遮罩层 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .overlay.active {
+            display: block;
+            opacity: 1;
+        }
+        
+        /* 返回顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: white;
+            color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            border: 2px solid var(--primary);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+        }
+        
+        /* 当前章节指示器 */
+        .current-section-indicator {
+            position: fixed;
+            left: 270px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            z-index: 99;
+            display: none;
+            transition: var(--transition);
+        }
+        
+        /* 资源类型标签 */
+        .resource-type {
+            display: inline-block;
+            padding: 3px 10px;
+            background-color: #f0fff4;
+            color: var(--secondary);
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-left: 8px;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        /* 可拖动调节侧边栏宽度 */
+        .sidebar-resizer {
+            width: 6px;
+            cursor: ew-resize;
+            background-color: #e2e8f0;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .resource-sidebar {
+            resize: none; 
+            min-width: 260px; 
+            max-width: 700px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .left-nav {
+                width: 220px;
+            }
+            
+            .main-content {
+                max-width: calc(100% - 220px);
+            }
+            
+            .container {
+                padding: 20px 30px 60px;
+            }
+            
+            .resource-sidebar {
+                width: 400px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .left-nav {
+                width: 100%;
+                height: auto;
+                position: static;
+                max-height: 70px;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+            
+            .left-nav.expanded {
+                max-height: 500px;
+            }
+            
+            .nav-header {
+                padding: 15px;
+                cursor: pointer;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            
+            .nav-header::after {
+                content: "☰";
+                font-size: 1.5rem;
+                color: var(--primary);
+            }
+            
+            .left-nav.expanded .nav-header::after {
+                content: "✕";
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .left-nav.expanded .nav-links {
+                display: block;
+            }
+            
+            .main-content {
+                max-width: 100%;
+            }
+            
+            .container {
+                padding: 15px 20px 50px;
+            }
+            
+            .lesson-title {
+                font-size: 1.8rem;
+            }
+            
+            .section-body {
+                padding: 20px;
+            }
+            
+            .resource-sidebar {
+                width: 100%;
+            }
+            
+            .resource-global-entry {
+                bottom: 20px;
+                right: 20px;
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            
+            .back-to-top {
+                bottom: 90px;
+                right: 20px;
+            }
+            
+            .inline-resource {
+                font-size: 0.9rem;
+                padding: 4px 10px;
+            }
+            
+            .current-section-indicator {
+                left: 20px;
+                top: 80px;
+                transform: none;
+                border-radius: var(--radius);
+                display: none !important;
+            }
+            
+            .gallery-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .matching-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .gallery-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-objects {
+                gap: 10px;
+            }
+            
+            .game-object {
+                width: 50px;
+                height: 50px;
+                font-size: 2rem;
+            }
+        }
+
+        .resource-global-entry {
+            display: none !important;
+        }
+
+        .game-object.selected {
+    outline: 4px solid #4a6fa5;
+    outline-offset: -4px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航栏 -->
+        <div class="left-nav" id="leftNav">
+            <div class="nav-header">
+                <div class="nav-logo">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>数学教案</span>
+                </div>
+                <div class="nav-subtitle">1-5的认识 | 一年级上册</div>
+            </div>
+            
+            <div class="nav-links">
+                <div class="nav-section">
+                    <a href="#section-analysis" class="nav-link active" data-section="analysis">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>教学内容分析</span>
+                    </a>
+                    <a href="#section-situation" class="nav-link" data-section="situation">
+                        <i class="fas fa-users"></i>
+                        <span>学情分析</span>
+                    </a>
+                    <a href="#section-objectives" class="nav-link" data-section="objectives">
+                        <i class="fas fa-bullseye"></i>
+                        <span>教学目标</span>
+                    </a>
+                    <a href="#section-difficulty" class="nav-link" data-section="difficulty">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span>教学重难点</span>
+                    </a>
+                    <a href="#section-process" class="nav-link" data-section="process">
+                        <i class="fas fa-list-ol"></i>
+                        <span>教学过程</span>
+                    </a>
+                    <a href="#section-preparation" class="nav-link" data-section="preparation">
+                        <i class="fas fa-tools"></i>
+                        <span>教学准备</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 当前章节指示器 -->
+        <div class="current-section-indicator" id="currentSectionIndicator">
+            教学内容分析
+        </div>
+        
+        <!-- 右侧主内容区 -->
+        <div class="main-content" id="mainContent">
+            <div class="container">
+                <!-- 教案内容 -->
+                <div class="lesson-content">
+                    <!-- 教学内容分析 -->
+                    <section class="section" id="section-analysis">
+                        <div class="section-header">
+                            <div class="section-number">一</div>
+                            <h2 class="section-title">教学内容分析</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="text-content">
+                                <p>本节内容是在小学一年级上册数学课程中"1~5的认识"部分的内容，旨在帮助学生初步认识1到5的数字及其对应的数量关系。教材通过具体的事物，如一栋房屋、一只狗、两只鹅、两个椅子等，形象地展示了1到5的数量概念。学生通过拨一拨、数一数、描一描、写一写等活动，逐步掌握数字1到5的书写和数量对应关系。此外，教材还设计了圈一圈、连一连、数一数、写一写等练习，帮助学生巩固所学内容，并通过实际操作和观察，进一步理解数字与数量的关系。通过这些活动，学生不仅能够认识和书写1到5的数字，还能在生活中识别和应用这些数字，培养初步的数感和数学思维能力。</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 学情分析 -->
+                    <section class="section" id="section-situation">
+                        <div class="section-header">
+                            <div class="section-number">二</div>
+                            <h2 class="section-title">学情分析</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="text-content">
+                                <h3>学生基础</h3>
+                                <p>在学习本节课之前，学生已经具备了一定的数感，能够识别和理解1到5的基本概念，并能在日常生活中识别和数数简单的物体数量。学生对数字的基本形态和书写方法有初步的了解，能够通过观察和模仿进行简单的数字书写练习。</p>
+                                
+                                <h3>当前不足</h3>
+                                <p>学生在认识和理解1到5的数量时，可能会遇到一些困难。例如，学生可能会混淆数字的顺序，或者在数数时出现遗漏或重复的情况。此外，学生在书写数字时，可能会出现笔画不规范或方向错误的问题。对于一些抽象的数量概念，学生可能需要更多的实际操作和练习来加深理解。</p>
+                                
+                                <h3>学习策略</h3>
+                                <p>1.通过多种感官参与的教学活动，如拨一拨、数一数、描一描、写一写等，帮助学生在实际操作中加深对数字的理解。</p>
+                                <p>2.利用生活中的实物和图片进行教学，让学生通过观察和比较，理解数字与数量之间的关系。</p>
+                                <p>3.设计有趣的数学游戏和练习，如圈一圈、连一连等，激发学生的学习兴趣，帮助他们巩固所学知识。</p>
+                                <p>4.提供个性化的指导和帮助，根据学生的不同学习情况，给予针对性的练习和反馈，帮助他们克服学习中的困难。</p>
+                                
+                                <h3>个性化特点</h3>
+                                <p>本班学生在学习态度和基础知识掌握方面存在一定的差异。有些学生对数字的认识和书写非常熟练，能够快速准确地完成相关练习；而另一些学生则在数数和书写方面存在一定的困难，需要更多的练习和指导。在学习态度上，大多数学生对数学学习表现出浓厚的兴趣和积极的参与态度，但也有少数学生在学习过程中容易分心，注意力不够集中。教师应注意到这些差异，在教学过程中提供个性化的指导和帮助，以满足不同层次学生的需求，促进每一位学生的全面发展。</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 教学目标 -->
+                    <section class="section" id="section-objectives">
+                        <div class="section-header">
+                            <div class="section-number">三</div>
+                            <h2 class="section-title">教学目标</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="text-content">
+                                <p>1. 通过观察和数数生活中的事物，初步认识1到5的数字，理解数字与数量之间的关系。</p>
+                                <p>2. 通过动手操作和描写数字，培养学生的动手能力和书写数字的技能。</p>
+                                <p>3. 通过圈一圈、连一连等活动，增强学生对数字1到5的识别和应用能力。</p>
+                                <p>4. 通过数一数、写一写等练习，提升学生的数感和对数字的敏感度。</p>
+                                <p>5. 通过用自己喜欢的方式表示1到5，激发学生的创造力和对数学学习的兴趣。</p>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 教学重难点 -->
+                    <section class="section" id="section-difficulty">
+                        <div class="section-header">
+                            <div class="section-number">四</div>
+                            <h2 class="section-title">教学重难点</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="text-content">
+                                <div >
+                                    <h3>教学重点</h3>
+                                    <p>1. 通过观察和数数生活中的事物，初步认识1到5的数字，理解数字与数量之间的关系。</p>
+                                    <p>2. 通过动手操作和描写数字，培养学生的动手能力和书写数字的技能。</p>
+                                    <p>3. 通过圈一圈、连一连等活动，增强学生对数字1到5的识别和应用能力。</p>
+                                </div>
+                                
+                                <div >
+                                    <h3>教学难点</h3>
+                                    <p>1. 理解数字与数量之间的关系，特别是对于数量的准确识别和对应数字的正确书写。</p>
+                                    <p>2. 在实际操作中，能够准确地数出物体的数量并正确地用数字表示出来。</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 教学过程 -->
+                    <section class="section" id="section-process">
+                        <div class="section-header">
+                            <div class="section-number">五</div>
+                            <h2 class="section-title">教学过程</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="teaching-process">
+                                <!-- 步骤1 -->
+                                <div class="process-step">
+                                    <div class="step-header">
+                                        <div class="step-title">设置问题情境，确立学习目标</div>
+                                        <div class="step-time">5分钟</div>
+                                    </div>
+                                    <div class="step-content">
+                                        <div class="activity-type">教师活动</div>
+                                        <!-- <span class="resource-type">互动</span> -->
+                                        <div class="activity-desc">教师通过<a class="inline-resource" data-resource="number-objects">展示图片</a>引入情境。</div>
+                                        <div class="activity-desc">
+                                            <img src="图1.1.1.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                            <img src="图1.1.2.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                            <img src="图1.1.3.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                            <img src="图1.1.4.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                            <img src="图1.1.5.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                        </div>
+                                        <div class="activity-desc">师：同学们，今天我们来认识数字1到5。老师给大家带来了几张图片，请大家仔细观察。图片中有一栋房屋、一只狗、两只鹅、两个椅子、三只鸟、三个萝卜、四个向日葵、四个南瓜、五个鸭子和五个玉米。你们能数一数这些事物的数量吗？
+                                               <span class="inline-resource video-trigger" data-resource="intro-video">
+                                                    <i class="fas fa-play-circle"></i> 参考教学视频
+                                                </span>
+                                        </div>
+                                       
+                                        <div class="activity-type">学生活动</div>
+                                        <div class="activity-desc">学生观察图片并回答。</div>
+                                        <div class="activity-desc">预设1：学生回答："一栋房屋有1个，一只狗有1个。"</div>
+                                        <div class="activity-desc">预设2：学生回答："两只鹅有2个，两个椅子有2个。"</div>
+                                        <div class="activity-desc">预设3：学生回答："三只鸟有3个，三个萝卜有3个。"</div>
+                                        <div class="activity-desc">预设4：学生回答："四个向日葵有4个，四个南瓜有4个。"</div>
+                                        <div class="activity-desc">预设5：学生回答："五个鸭子有5个，五个玉米有5个。"</div>
+                                        
+                                        <div class="activity-type">活动意图</div>
+                                        <div class="activity-desc">通过观察图片中的事物数量，帮助学生初步认识数字1到5，理解数字与数量之间的关系。</div>
+                                        
+                                        <div class="activity-type">效果评价</div>
+                                        <div class="activity-desc">学生能够正确数出图片中事物的数量，并初步理解数字与数量的对应关系。</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 步骤2 -->
+                                <div class="process-step">
+                                    <div class="step-header">
+                                        <div class="step-title">小组分配</div>
+                                        <div class="step-time">5分钟</div>
+                                    </div>
+                                    <div class="step-content">
+                                        <div class="activity-type">教师活动</div>
+                                        <div class="activity-desc">教师将学生分成小组，并分配任务。</div>
+                                        <div class="activity-desc">师：接下来，我们将进行一些有趣的活动。老师会把大家分成几个小组，每组负责完成不同的任务。比如，有的小组负责"拨一拨，数一数"，有的小组负责"描一描，写一写"，还有的小组负责"做一做"。大家准备好了吗？</div>
+                                        
+                                        <div class="activity-type">学生活动</div>
+                                        <div class="activity-desc">学生分组并领取任务。</div>
+                                        <div class="activity-desc">预设：学生分成三组，每组领取对应的任务。</div>
+                                        
+                                        <div class="activity-type">活动意图</div>
+                                        <div class="activity-desc">通过分组活动，培养学生的合作意识和团队精神，同时明确任务分工。</div>
+                                        
+                                        <div class="activity-type">效果评价</div>
+                                        <div class="activity-desc">学生能够积极参与分组，并清楚自己的任务。</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 步骤3 -->
+                                <div class="process-step">
+                                    <div class="step-header">
+                                        <div class="step-title">拨一拨，数一数</div>
+                                        <div class="step-time">10分钟</div>
+                                    </div>
+                                    <div class="step-content">
+                                        <div class="activity-type">教师活动</div>
+                                        <div class="activity-desc">教师指导学生进行<a class="inline-resource" data-resource="abacus-simulator">拨数活动</a>。</div>
+                                            <!-- 整体资源卡片容器 -->
+                                        <div class="activity-desc">
+                                            <!-- 横向排列的整体容器 -->
+                                            <div style="display: flex; align-items: flex-start; gap: 24px;">
+                                                <!-- ========== 模块 1：教材参考图 ========== -->
+                                                <!-- <div style="display:flex; flex-direction:column; align-items:center; width:260px;">
+                                                    <img src="图1.1.7.png" alt="教材参考图"
+                                                        style="width: 100%; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);">
+                                                    
+                                                    <div style="margin-top:8px; font-size:14px; color:#4a5568;">
+                                                        教材参考图
+                                                    </div>
+                                                </div> -->
+
+                                                <!-- ========== 模块 2：拨珠器静态图 ========== -->
+                                                <div style="display:flex; flex-direction:column; align-items:center; width:260px;">
+                                                    <img src="拨珠器.png" alt="拨珠器示例"
+                                                        style="width: 100%; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.12);">
+                                                    
+                                                    <div style="margin-top:8px; font-size:14px; color:#4a5568;">
+                                                        拨珠器示例图
+                                                    </div>
+                                                </div>
+
+                                                <!-- ========== 模块 3：视频示例 ========== -->
+                                                <div style="display:flex; flex-direction:column; align-items:center; width:260px;">
+                                                    <video 
+                                                        src="拨珠器演示视频.mp4"
+                                                        controls
+                                                        style="width: 100%; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); background:#000;">
+                                                    </video>
+
+                                                    <div style="margin-top:8px; font-size:14px; color:#4a5568;">
+                                                        拨珠器操作示例视频
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ======== 带视频触发的下一段（保留你原结构） ======== -->
+                                        <div class="activity-desc">
+                                            师：现在请第一组的同学拿出拨珠器，拨动珠子来表示数字1到5。拨完后，请大家数一数拨出的珠子数量，并说出对应的数字。
+                                            
+                                            <span class="inline-resource video-trigger" data-resource="intro-video-2">
+                                                <i class="fas fa-play-circle"></i> 参考教学视频
+                                            </span>
+                                        </div>
+                                         
+                                        <div class="activity-type">学生活动</div>
+                                        <div class="activity-desc">学生拨动珠子并数数。</div>
+                                        <div class="activity-desc">预设1：学生拨动1颗珠子并说："这是数字1。"</div>
+                                        <div class="activity-desc">预设2：学生拨动2颗珠子并说："这是数字2。"</div>
+                                        <div class="activity-desc">预设3：学生拨动3颗珠子并说："这是数字3。"</div>
+                                        <div class="activity-desc">预设4：学生拨动4颗珠子并说："这是数字4。"</div>
+                                        <div class="activity-desc">预设5：学生拨动5颗珠子并说："这是数字5。"</div>
+                                        
+                                        <div class="activity-type">活动意图</div>
+                                        <div class="activity-desc">通过拨珠器的操作，帮助学生理解数字与数量的关系，培养动手能力。</div>
+                                        
+                                        <div class="activity-type">效果评价</div>
+                                        <div class="activity-desc">学生能够正确拨动珠子并数出对应的数量。</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 步骤4 -->
+                                <div class="process-step">
+                                    <div class="step-header">
+                                        <div class="step-title">描一描，写一写</div>
+                                        <div class="step-time">10分钟</div>
+                                    </div>
+                                    <div class="step-content">
+                                        <div class="activity-type">教师活动</div>
+                                        <div class="activity-desc">教师指导学生进行数字<a class="inline-resource" data-resource="writing-animation">描写练习</a>。</div>
+                                         <div class="activity-desc">
+                                            <img src="图1.1.8.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                        </div>
+                                        <div class="activity-desc">师：第二组的同学，请拿出练习纸和铅笔，按照老师的示范，描一描数字1到5。描完后，请大家试着自己写一写这些数字。
+                                            <span class="inline-resource video-trigger" data-resource="intro-video-3">
+                                                <i class="fas fa-play-circle"></i> 参考教学视频
+                                            </span>
+                                        </div>
+                                      
+                                        <div class="activity-type">学生活动</div>
+                                        <div class="activity-desc">学生描写并书写数字。</div>
+                                        <div class="activity-desc">预设1：学生描写数字1并尝试书写。</div>
+                                        <div class="activity-desc">预设2：学生描写数字2并尝试书写。</div>
+                                        <div class="activity-desc">预设3：学生描写数字3并尝试书写。</div>
+                                        <div class="activity-desc">预设4：学生描写数字4并尝试书写。</div>
+                                        <div class="activity-desc">预设5：学生描写数字5并尝试书写。</div>
+                                        
+                                        <div class="activity-type">活动意图</div>
+                                        <div class="activity-desc">通过描写和书写练习，培养学生的书写技能和对数字的熟悉度。</div>
+                                        
+                                        <div class="activity-type">效果评价</div>
+                                        <div class="activity-desc">学生能够正确描写和书写数字1到5。</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 步骤5 -->
+                                <div class="process-step">
+                                    <div class="step-header">
+                                        <div class="step-title">做一做</div>
+                                        <div class="step-time">8分钟</div>
+                                    </div>
+                                    <div class="step-content">
+                                        <div style="margin-bottom: 25px; ">
+                                            <div class="activity-title" style="color: #4a6fa5; font-size: 18px;">①照样子圈一圈</div>
+                                            <div class="activity-type">教师活动</div>
+                                            <div class="activity-desc">教师指导学生完成<a class="inline-resource" data-resource="circle-game">圈一圈</a>的练习。</div>
+                                            <div class="activity-desc">师：第三组的同学，请看练习纸上的图片，按照示例圈出对应数量的事物。例如，圈出1个毽子、2个哨子、3个橡皮、4个鸟、5个羽毛球。</div>
+                                            <div class="activity-type">学生活动</div>
+                                            <div class="activity-desc">学生完成圈一圈的练习。</div>
+                                            <div class="activity-desc">预设：学生圈出对应数量的事物。</div>
+                                            <div class="activity-type">活动意图</div>
+                                            <div class="activity-desc">通过圈一圈的活动，增强学生对数字与数量的识别能力。</div>
+                                            <div class="activity-type">效果评价</div>
+                                            <div class="activity-desc">学生能够正确完成圈一圈的练习。</div>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: 25px;border-top: 2px dashed #e2e8f0;">
+                                             <div class="activity-title" style="color: #4a6fa5; font-size: 18px;">②连一连</div>
+                                            <div class="activity-type">教师活动</div>
+                                            <div class="activity-desc">教师指导学生完成<a class="inline-resource" data-resource="connect-game">连一连</a>的练习。</div>
+                                             <div class="activity-desc">
+                                                <img src="图1.1.10.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                            </div>
+                                            <div class="activity-desc">师：请大家看练习纸上的数字和事物图片，按照数量将数字与对应的事物连起来。例如，数字1连到一本书，数字2连到两个哨子，数字3连到三个橡皮，数字4连到四个毽子，数字5连到五个羽毛球。
+                                                  <span class="inline-resource " data-resource="matching-extra">
+                                                    <i class="fas fa-tasks"></i> 拓展练习题目
+                                                </span>
+                                            </div>
+                                        
+                                            <div class="activity-type">学生活动</div>
+                                            <div class="activity-desc">学生完成连一连的练习。</div>
+                                            <div class="activity-desc">预设：学生正确连线数字与对应的事物。</div>
+                                            <div class="activity-type">活动意图</div>
+                                            <div class="activity-desc">通过连一连的活动，帮助学生巩固数字与数量的对应关系。</div>
+                                            <div class="activity-type">效果评价</div>
+                                            <div class="activity-desc">学生能够正确完成连一连的练习。</div>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: 25px;border-top: 2px dashed #e2e8f0;">
+                                            <div class="activity-title" style="color: #4a6fa5; font-size: 18px;">③数一数，写一写</div>
+                                            
+                                            <div class="activity-type">教师活动</div>
+                                            <div class="activity-desc">教师活动：教师指导学生完成<a class="inline-resource" data-resource="count-write">数一数、写一写</a>的练习。</div>
+                                             <div class="activity-desc">
+                                                <img src="图1.1.11.png" alt="展示图片" style="width: 280px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);">
+                                            </div>
+                                            <div class="activity-desc">师：请大家看练习纸上的图片，数一数图片中的事物数量，并在空格中写出对应的数字。例如，一只羊写1，五只蜜蜂写5，四只鸟写4，三个熊猫写3，两只鸡写2。
+                                                <span class="inline-resource video-trigger" data-resource="count-write-extra">
+                                                    <i class="fas fa-tasks"></i> 拓展练习题目
+                                                </span>
+                                            </div>
+                                            
+                                            <div class="activity-type">学生活动</div>
+                                            <div class="activity-desc">学生完成数一数、写一写的练习。</div>
+                                            <div class="activity-desc">预设：学生正确数出事物数量并写出对应的数字。</div>
+                                            <div class="activity-type">活动意图</div>
+                                            <div class="activity-desc">通过数一数、写一写的活动，提升学生的数感和书写能力。</div>
+                                            <div class="activity-type">效果评价</div>
+                                            <div class="activity-desc">学生能够正确完成数一数、写一写的练习。</div>
+                                        </div>
+                                        
+                                        <div style="margin-bottom: 25px;border-top: 2px dashed #e2e8f0;">
+                                            <div class="activity-title" style="color: #4a6fa5; font-size: 18px;">④用自己喜欢的方式表示1、2、3、4、5</div>
+                                            <div class="activity-type">教师活动</div>
+                                            <div class="activity-desc">教师活动：教师鼓励学生用<a class="inline-resource" data-resource="creative-expression">创意方式</a>表示数字。</div>
+                                            <div class="activity-desc">师：最后，请大家用自己喜欢的方式表示数字1到5。可以画画、用手势、或者用其他方式来表示。</div>
+                                            <div class="activity-type">学生活动</div>
+                                            <div class="activity-desc">学生用创意方式表示数字。</div>
+                                            <div class="activity-desc">预设1：学生画出1个苹果、2只猫、3朵花、4颗星星、5个气球。</div>
+                                            <div class="activity-desc">预设2：学生用手势表示数字1到5。</div>
+                                            <div class="activity-type">活动意图</div>
+                                            <div class="activity-desc">通过创意表达活动，激发学生的创造力和对数学学习的兴趣。</div>
+                                            <div class="activity-type">效果评价</div>
+                                            <div class="activity-desc">学生能够用多种方式表示数字1到5，展现创造力。</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 步骤6 -->
+                                <div class="process-step">
+                                    <div class="step-header">
+                                        <div class="step-title">教师点评</div>
+                                        <div class="step-time">5分钟</div>
+                                    </div>
+                                    <div class="step-content">
+                                        <div class="activity-type">教师活动</div>
+                                        <div class="activity-desc">教师总结学生的表现并给予鼓励。</div>
+                                        <div class="activity-desc">师：今天大家表现得非常棒！通过观察、拨珠、描写、圈一圈、连一连等活动，大家已经认识了数字1到5，并理解了数字与数量的关系。老师希望大家继续保持对数学的兴趣，学会用数字表达生活中的事物。</div>
+                                        
+                                        <div class="activity-type">学生活动</div>
+                                        <div class="activity-desc">学生听教师点评并分享自己的感受。</div>
+                                        <div class="activity-desc">预设：学生说："我觉得今天的活动很有趣，我学会了数字1到5。"</div>
+                                        
+                                        <div class="activity-type">活动意图</div>
+                                        <div class="activity-desc">通过教师点评，帮助学生总结学习成果，增强学习信心。</div>
+                                        
+                                        <div class="activity-type">效果评价</div>
+                                        <div class="activity-desc">学生能够积极回应教师点评，并表达自己的学习感受。</div>
+                                    </div>
+                                </div>
+                                
+                                <!-- 步骤7 -->
+                                <div class="process-step">
+                                    <div class="step-header">
+                                        <div class="step-title">提交学习成果</div>
+                                        <div class="step-time">2分钟</div>
+                                    </div>
+                                    <div class="step-content">
+                                        <div class="activity-type">教师活动</div>
+                                        <div class="activity-desc">教师收集学生的练习纸和创意作品。</div>
+                                        <div class="activity-desc">师：现在请大家将完成的练习纸和创意作品交给老师。老师会仔细看看大家的成果，并给出反馈。</div>
+                                        
+                                        <div class="activity-type">学生活动</div>
+                                        <div class="activity-desc">学生提交练习纸和创意作品。</div>
+                                        <div class="activity-desc">预设：学生将练习纸和作品交给老师。</div>
+                                        
+                                        <div class="activity-type">活动意图</div>
+                                        <div class="activity-desc">通过提交学习成果，帮助教师了解学生的学习情况。</div>
+                                        
+                                        <div class="activity-type">效果评价</div>
+                                        <div class="activity-desc">学生能够按时提交学习成果，展示自己的学习成果。</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- 教学准备 -->
+                    <section class="section" id="section-preparation">
+                        <div class="section-header">
+                            <div class="section-number">六</div>
+                            <h2 class="section-title">教学准备</h2>
+                        </div>
+                        <div class="section-body">
+                            <div class="text-content">
+                                <h3>教师准备</h3>
+                                <p>教材、课件、图片、拨珠器、练习纸。</p>
+                                
+                                <h3>学生准备</h3>
+                                <p>铅笔。</p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 资源侧边栏 -->
+    <div class="resource-sidebar" id="resourceSidebar"><div class="resource-sidebar" id="resourceSidebar"></div>
+        <div class="sidebar-header">
+            <div class="sidebar-title" id="sidebarTitle">教学互动</div>
+            <button class="close-sidebar" id="closeSidebar">&times;</button>
+        </div>
+        <div class="sidebar-content" id="sidebarContent">
+            <!-- 内容由JavaScript动态加载 -->
+        </div>
+    </div>
+    
+    <!-- 遮罩层 -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- 返回顶部按钮 -->
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+    
+    <!-- 资源全局入口 -->
+    <div class="resource-global-entry" id="resourceEntry">
+        <i class="fas fa-cube"></i>
+    </div>
+
+    <script>
+        // 资源数据
+        const resourceData = {
+            'number-objects': {
+                title: '数字与实物对应',
+                description: '展示数字1-5与实物的对应关系，帮助学生建立数量概念。包含房屋、狗、鹅、椅子等实物图片，学生可点击互动，查看不同数量的物品。',
+                type: '互动',
+                icon: 'fas fa-home',
+                interactiveType: 'image-gallery'
+            },
+            'abacus-simulator': {
+                title: '虚拟拨珠器',
+                description: '模拟真实拨珠器操作，学生可以拨动珠子表示数字1-5，并听到对应的数数声音。帮助理解数字与数量的关系，培养动手能力。',
+                type: '模拟',
+                icon: 'fas fa-sliders-h',
+                interactiveType: 'abacus-simulator'
+            },
+            'writing-animation': {
+                title: '数字书写动画',
+                description: '展示数字1-5的正确笔画顺序动画，包含慢速演示和分步讲解。学生可以观看动画后，在屏幕上跟随轨迹练习书写。',
+                type: '动画',
+                icon: 'fas fa-pen-fancy',
+                interactiveType: 'writing-practice'
+            },
+            'circle-game': {
+    title: '圈一圈游戏',
+    description: '按照示例要求，依次圈出指定数量的物品，完成5个圈选任务。',
+    type: '游戏',
+    icon: 'fas fa-layer-group',
+    interactiveType: 'circle-step-game'
+},
+
+
+            'connect-game': {
+                title: '连一连游戏',
+                description: '将数字与对应数量的物品连线，巩固数字与数量的对应关系。包含即时反馈和得分系统，激发学生兴趣。',
+                type: '游戏',
+                icon: 'fas fa-project-diagram',
+                interactiveType: 'matching-game'
+            },
+            'count-write': {
+    title: '数一数，写一写（填空练习）',
+    description: '观察图片，数出事物数量，并在空格中填写对应的数字。',
+    type: '练习',
+    icon: 'fas fa-pencil-alt',
+    interactiveType: 'count-write-fill'
+},
+            'creative-expression': {
+                title: '创意表达工具',
+                description: '提供绘画、手势、声音等多种方式表示数字1-5，激发学生的创造力和对数学学习的兴趣。',
+                type: '工具',
+                icon: 'fas fa-palette',
+                interactiveType: 'writing-practice'
+            },
+            'intro-video': {
+                title: '参考教学视频',
+                description: '您可以点击下方链接直接转跳到智慧中小学平台观看教学参考视频。',
+                type: '视频',
+                icon: 'fas fa-play-circle',
+                interactiveType: 'video-block'
+            },
+            'intro-video-2': {
+                title: '参考教学视频',
+                description: '您可以点击下方链接直接转跳到智慧中小学平台观看教学参考视频。',
+                type: '视频',
+                icon: 'fas fa-play-circle',
+                interactiveType: 'video-block-2'
+            },
+            'intro-video-3': {
+                title: '参考教学视频',
+                description: '您可以点击下方链接直接转跳到智慧中小学平台观看教学参考视频。',
+                type: '视频',
+                icon: 'fas fa-play-circle',
+                interactiveType: 'video-block-3'
+            },
+            'matching-extra': {
+                title: "连一连拓展练习",
+                description: "关于数字与数量对应关系的拓展题目。",
+                icon: "fas fa-project-diagram",
+                interactiveType: "matching-extra-block"
+            },
+            'count-write-extra': {
+                title: "拓展练习：数一数，写一写",
+                description: "在基础练习之上进一步提升数数能力与数字表达能力。",
+                icon: "fas fa-pencil-alt",
+                interactiveType: "count-write-extra-block"
+            },
+        };
+        
+        // 获取DOM元素
+        const leftNav = document.getElementById('leftNav');
+        const resourceSidebar = document.getElementById('resourceSidebar');
+        const sidebarContent = document.getElementById('sidebarContent');
+        const sidebarTitle = document.getElementById('sidebarTitle');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const overlay = document.getElementById('overlay');
+        const resourceEntry = document.getElementById('resourceEntry');
+        const backToTop = document.getElementById('backToTop');
+        const mainContent = document.getElementById('mainContent');
+        const currentSectionIndicator = document.getElementById('currentSectionIndicator');
+        const inlineResources = document.querySelectorAll('.inline-resource');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        // 当前选中的资源ID
+        let currentResourceId = null;
+        let currentSection = 'analysis';
+        
+        // 打开侧边栏
+        function openSidebar(resourceId) {
+            currentResourceId = resourceId;
+            const resource = resourceData[resourceId];
+            
+            if (!resource) {
+                // 如果没有对应的资源，打开默认的互动侧边栏
+                openInteractiveSidebar();
+                return;
+            }
+            
+            // 更新侧边栏内容
+            updateSidebarContent(resource);
+            
+            // 显示侧边栏和遮罩层
+            resourceSidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // 打开互动侧边栏
+        function openInteractiveSidebar() {
+            sidebarTitle.textContent = '教学互动';
+            
+            // 构建侧边栏内容
+            let html = ``;
+            
+            sidebarContent.innerHTML = html;
+            
+            // 显示侧边栏和遮罩层
+            resourceSidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // 初始化游戏功能
+            initCountingGame();
+            initMatchingGame();
+            initWritingPractice();
+            initAbacusSimulator();
+            initCircleStepGame();
+            initCountWriteFill();
+
+
+        }
+        
+        // 更新侧边栏内容
+        function updateSidebarContent(resource) {
+            sidebarTitle.textContent = resource.title;
+            
+            // 根据资源类型构建不同的互动内容
+            let html = '';
+            
+             if (resource.interactiveType === 'count-write-fill') {
+    html = `
+        <div class="interactive-section">
+            <h3 class="interactive-title">
+                <i class="${resource.icon}"></i> ${resource.title}
+            </h3>
+            <p>${resource.description}</p>
+
+            <div class="counting-game">
+                <div class="game-title">数一数，在空格中写数字</div>
+
+                <div class="game-objects" style="flex-direction: column; gap: 12px; align-items: flex-start;">
+                    <div>🐑 <input class="cw-input" data-answer="1" /></div>
+                    <div>🐝🐝🐝🐝🐝 <input class="cw-input" data-answer="5" /></div>
+                    <div>🐦🐦🐦🐦 <input class="cw-input" data-answer="4" /></div>
+                    <div>🐼🐼🐼 <input class="cw-input" data-answer="3" /></div>
+                    <div>🐔🐔 <input class="cw-input" data-answer="2" /></div>
+                </div>
+
+                <div class="game-controls">
+                    <button class="game-btn" id="checkCW">检查</button>
+                    <button class="game-btn secondary" id="resetCW">重新填写</button>
+                </div>
+
+                <div class="game-result" id="cwResult">
+                    数一数，再填写数字
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+           else if (resource.interactiveType === 'matching-game') {
+                html = `
+                    <div class="interactive-section">
+                        <h3 class="interactive-title"><i class="${resource.icon}"></i> ${resource.title}</h3>
+                        <p>${resource.description}</p>
+                        
+                        <div class="matching-game" style="margin-top: 15px;">
+                            <div class="game-title">将数字与对应数量的物品连线</div>
+                            <div class="matching-container">
+                                <div class="numbers-side">
+                                    <div class="number-item" data-number="1">1</div>
+                                    <div class="number-item" data-number="2">2</div>
+                                    <div class="number-item" data-number="3">3</div>
+                                    <div class="number-item" data-number="4">4</div>
+                                    <div class="number-item" data-number="5">5</div>
+                                </div>
+                                <div class="objects-side">
+                                    <div class="object-item" data-count="3">🍎🍎🍎</div>
+                                    <div class="object-item" data-count="1">⭐</div>
+                                    <div class="object-item" data-count="5">⚽⚽⚽⚽⚽</div>
+                                    <div class="object-item" data-count="2">🐦🐦</div>
+                                    <div class="object-item" data-count="4">🌺🌺🌺🌺</div>
+                                </div>
+                            </div>
+                            <div class="matching-line-container" id="matchingLineContainer"></div>
+                            <div class="game-result" id="matchingResult">点击数字，然后点击对应数量的物品进行连线</div>
+                            <div class="game-controls">
+                                <button class="game-btn" id="checkMatching">检查连线</button>
+                                <button class="game-btn secondary" id="resetMatching">清除连线</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'writing-practice') {
+                html = `
+                    <div class="interactive-section">
+                        <h3 class="interactive-title"><i class="${resource.icon}"></i> ${resource.title}</h3>
+                        <p>${resource.description}</p>
+                        
+                        <div class="writing-practice" style="margin-top: 15px;">
+                            <div class="game-title">在下方画板上练习书写数字1-5</div>
+                            <div class="writing-container">
+                                <canvas class="writing-canvas" id="writingCanvas" width="400" height="150"></canvas>
+                                <div class="writing-controls">
+                                    <button class="writing-number-btn" data-number="1">1</button>
+                                    <button class="writing-number-btn" data-number="2">2</button>
+                                    <button class="writing-number-btn" data-number="3">3</button>
+                                    <button class="writing-number-btn" data-number="4">4</button>
+                                    <button class="writing-number-btn" data-number="5">5</button>
+                                    <button class="game-btn secondary" id="clearCanvas">清除画板</button>
+                                    <button class="game-btn" id="saveWriting">保存练习</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'abacus-simulator') {
+                html = `
+                    <div class="interactive-section">
+                        <h3 class="interactive-title"><i class="${resource.icon}"></i> ${resource.title}</h3>
+                        <p>${resource.description}</p>
+                        
+                        <div class="abacus-simulator" style="margin-top: 15px;">
+                            <div class="game-title">拨动珠子表示数字1-5</div>
+                            <div class="abacus-container">
+                                <div class="abacus-frame">
+                                    <div class="abacus-rod" id="abacusRod">
+                                        <!-- 珠子会通过JavaScript动态添加 -->
+                                    </div>
+                                </div>
+                                <div class="abacus-count-display" id="abacusCount">当前数量: 0</div>
+                                <div class="abacus-controls">
+                                    <button class="game-btn" id="abacusReset">重置拨珠器</button>
+                                    <button class="game-btn secondary" id="abacusCheck">检查数字</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'image-gallery') {
+                html = `
+                    <div class="interactive-section">
+                        <h3 class="interactive-title"><i class="${resource.icon}"></i> ${resource.title}</h3>
+                        <p>${resource.description}</p>
+                        
+                        <div class="image-gallery" style="margin-top: 15px;">
+                            <div class="gallery-title">数字1-5实物对应图</div>
+                            <div class="gallery-container">
+                                <div class="gallery-item">
+                                    <div class="gallery-img">🏠</div>
+                                    <div class="gallery-label">数字1：一栋房屋</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <div class="gallery-img">🐕</div>
+                                    <div class="gallery-label">数字1：一只狗</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <div class="gallery-img">🦢🦢</div>
+                                    <div class="gallery-label">数字2：两只鹅</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <div class="gallery-img">🪑🪑</div>
+                                    <div class="gallery-label">数字2：两个椅子</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <div class="gallery-img">🐦🐦🐦</div>
+                                    <div class="gallery-label">数字3：三只鸟</div>
+                                </div>
+                                <div class="gallery-item">
+                                    <div class="gallery-img">🥕🥕🥕</div>
+                                    <div class="gallery-label">数字3：三个萝卜</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'video-block') {
+                const videoUrl = "https://basic.smartedu.cn/syncClassroom/classActivity?activityId=fa3a9a7c-9085-519a-e9cb-4c8c1f3761dc&chapterId=45a1c85b-4c52-47c6-920d-c485f21bb8ad&teachingmaterialId=ba9d9c0b-2c1c-4bba-84d7-369fb405bb13&fromPrepare=1&classHourId=lesson_1";
+
+                html = `
+                    <div class="interactive-section">
+                        <h3 class="interactive-title">
+                            <i class="${resource.icon}"></i> ${resource.title}
+                        </h3>
+                        <p>${resource.description}</p>
+
+                        <!-- 🔗 视频外链展示 -->
+                        <div style="
+                            background: #f7fafc;
+                            padding: 10px 14px;
+                            border-radius: 8px;
+                            border-left: 4px solid var(--primary);
+                            margin: 12px 0;
+                            font-size: 0.95rem;
+                        ">
+                            <strong>视频链接：</strong>
+                            <a href="${videoUrl}" 
+                                target="_blank"
+                                style="color: var(--primary); font-weight: 600; text-decoration: underline;">
+                                点击前往播放页面
+                            </a>
+                        </div>
+
+                        <!-- 🖼 视频封面图片（可替换） -->
+                        <div style="
+                            width: 100%;
+                            margin-top: 16px;
+                            border-radius: 10px;
+                            overflow: hidden;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                            cursor: pointer;
+                        ">
+                            <a href="${videoUrl}" target="_blank">
+                                <img src="image.png"
+                                    alt="视频封面"
+                                    style="width: 100%; height: auto; display: block;">
+                            </a>
+                        </div>
+
+                        <!-- 📄 视频说明文字 -->
+                        <div style="margin-top: 20px;">
+                            <h4 style="margin-bottom: 6px;">视频说说明</h4>
+                            <p style="color:#4a5568; line-height: 1.6;">
+                               通过观察小院场景，学生认识了数字 1～5 所对应的事物，如 1（房子、狗）、2（椅子、白鹅）、3（白云、小鸟）、4（南瓜、向日葵）、5（玉米、鸭子）等；学习用圆片和数字表示数量，掌握从左到右、从上到下的有序观察方法及手指点数、做标记两种数数技巧；同时结合生活实例，理解数字在日常中的应用。
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'video-block-2') {
+                const videoUrl = "https://basic.smartedu.cn/syncClassroom/classActivity?activityId=fa3a9a7c-9085-519a-e9cb-4c8c1f3761dc&chapterId=45a1c85b-4c52-47c6-920d-c485f21bb8ad&teachingmaterialId=ba9d9c0b-2c1c-4bba-84d7-369fb405bb13&fromPrepare=1&classHourId=lesson_1";
+
+                html = `
+                    <div class="interactive-section">
+                        <h3 class="interactive-title">
+                            <i class="${resource.icon}"></i> ${resource.title}
+                        </h3>
+                        <p>${resource.description}</p>
+
+                        <!-- 🔗 视频外链展示 -->
+                        <div style="
+                            background: #f7fafc;
+                            padding: 10px 14px;
+                            border-radius: 8px;
+                            border-left: 4px solid var(--primary);
+                            margin: 12px 0;
+                            font-size: 0.95rem;
+                        ">
+                            <strong>视频链接：</strong>
+                            <a href="${videoUrl}" 
+                                target="_blank"
+                                style="color: var(--primary); font-weight: 600; text-decoration: underline;">
+                                点击前往播放页面
+                            </a>
+                        </div>
+
+                        <!-- 🖼 视频封面图片（可替换） -->
+                        <div style="
+                            width: 100%;
+                            margin-top: 16px;
+                            border-radius: 10px;
+                            overflow: hidden;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                            cursor: pointer;
+                        ">
+                            <a href="${videoUrl}" target="_blank">
+                                <img src="image2.png"
+                                    alt="视频封面"
+                                    style="width: 100%; height: auto; display: block;">
+                            </a>
+                        </div>
+
+                        <!-- 📄 视频说明文字 -->
+                        <div style="margin-top: 20px;">
+                            <h4 style="margin-bottom: 6px;">视频说说明</h4>
+                            <p style="color:#4a5568; line-height: 1.6;">
+                               老师通过计数器和小方块演示了1到5的数序关系：1添1是2，2添1是3，依次类推至5，反之5拨走1是4，依次减少到1，体现数之间"添1"与"去1"的递进规律。用小方块表示数时，数是几就摆几个。学生展示了两种排列方式：1,2,3,4,5（递增，1最小）和5,4,3,2,1（递减，5最大），两种顺序均正确，说明1到5的数既能从小到大排列，也能从大到小排列，体现数序的双向性。
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'video-block-3') {
+                const videoUrl = "https://basic.smartedu.cn/syncClassroom/classActivity?activityId=fa3a9a7c-9085-519a-e9cb-4c8c1f3761dc&chapterId=45a1c85b-4c52-47c6-920d-c485f21bb8ad&teachingmaterialId=ba9d9c0b-2c1c-4bba-84d7-369fb405bb13&fromPrepare=1&classHourId=lesson_1";
+
+                html = `
+                    <div class="interactive-section">
+                        <h3 class="interactive-title">
+                            <i class="${resource.icon}"></i> ${resource.title}
+                        </h3>
+                        <p>${resource.description}</p>
+
+                        <!-- 🔗 视频外链展示 -->
+                        <div style="
+                            background: #f7fafc;
+                            padding: 10px 14px;
+                            border-radius: 8px;
+                            border-left: 4px solid var(--primary);
+                            margin: 12px 0;
+                            font-size: 0.95rem;
+                        ">
+                            <strong>视频链接：</strong>
+                            <a href="${videoUrl}" 
+                                target="_blank"
+                                style="color: var(--primary); font-weight: 600; text-decoration: underline;">
+                                点击前往播放页面
+                            </a>
+                        </div>
+
+                        <!-- 🖼 视频封面图片（可替换） -->
+                        <div style="
+                            width: 100%;
+                            margin-top: 16px;
+                            border-radius: 10px;
+                            overflow: hidden;
+                            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+                            cursor: pointer;
+                        ">
+                            <a href="${videoUrl}" target="_blank">
+                                <img src="image3.png"
+                                    alt="视频封面"
+                                    style="width: 100%; height: auto; display: block;">
+                            </a>
+                        </div>
+
+                        <!-- 📄 视频说明文字 -->
+                        <div style="margin-top: 20px;">
+                            <h4 style="margin-bottom: 6px;">视频说说明</h4>
+                            <p style="color:#4a5568; line-height: 1.6;">
+                              数字1至5的书写要领：数字1像铅笔，从田字格右上角斜向左下角写直；数字2像小鸭，起笔写半圆后接直斜竖再写平横，需一笔完成；数字3像耳朵，分上下两个半圆，起笔不碰线，注意上下半圆大小比例；数字4像小旗分两笔，第一笔斜竖接横，第二笔平行竖线；数字5像钩子分两笔，先写斜竖半圆再补平横。书写时需注意每个数字的起收笔位置、拐弯角度及笔画顺序，保持"头正肩平身直足安"的姿势培养良好书写习惯。</p>
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'matching-extra-block') {
+                html = `
+                    <div class="interactive-section">
+                        <!-- 标题 -->
+                        <h3 class="interactive-title">
+                            <i class="fas fa-lightbulb"></i> 拓展练习：数字 1～5 的综合提升
+                        </h3>
+
+                        <p style="margin-bottom:16px; color:#4a5568;">
+                            以下练习围绕数字 1～5 的观察、判断与数量应用设计，适合在学生掌握基础书写后进一步提升能力。
+                        </p>
+
+                        <!-- ========== 题目 1 ========== -->
+                        <div style="
+                            padding:16px;
+                            border-radius:10px;
+                            border:1px solid #e2e8f0;
+                            background:#ffffff;
+                            margin-bottom:22px;
+                            box-shadow:0 2px 6px rgba(0,0,0,0.06);
+                        ">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <i class="fas fa-search-plus" style="color:#4a6fa5; font-size:20px;"></i>
+                                <h4 style="margin:0; color:#2d3748;">题目 1：判断正确的连线</h4>
+                            </div>
+
+                            <p style="color:#4a5568;">下列连线中哪一项是正确的？</p>
+
+                            <ul style="margin-left:16px; color:#4a5568; line-height:1.7;">
+                                <li>A. 数字 2 → 三本书</li>
+                                <li>B. 数字 3 → 三支铅笔</li>
+                                <li>C. 数字 5 → 四个皮球</li>
+                            </ul>
+
+                            <p style="margin-top:12px; font-weight:600; color:#2f855a;">
+                                ✔ 参考答案：B
+                            </p>
+
+                            <p style="margin-top:6px; color:#4a5568; line-height:1.6;">
+                                ★ 解析：数字对应数量必须一致，3 对应三支铅笔，其他两项的数量明显不符。
+                            </p>
+                        </div>
+
+                        <!-- ========== 题目 2 ========== -->
+                        <div style="
+                            padding:16px;
+                            border-radius:10px;
+                            border:1px solid #e2e8f0;
+                            background:#ffffff;
+                            margin-bottom:22px;
+                            box-shadow:0 2px 6px rgba(0,0,0,0.06);
+                        ">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <i class="fas fa-shapes" style="color:#4a6fa5; font-size:20px;"></i>
+                                <h4 style="margin:0; color:#2d3748;">题目 2：数字规律填空</h4>
+                            </div>
+
+                            <p style="color:#4a5568;">观察下列数字序列，空格中应填入哪一个数字？</p>
+
+                            <p style="font-size:1.2rem; margin:12px 0; color:#2d3748;">
+                                1，2，3， — ，5
+                            </p>
+
+                            <ul style="margin-left:16px; color:#4a5568; line-height:1.7;">
+                                <li>A. 1</li>
+                                <li>B. 3</li>
+                                <li>C. 4</li>
+                            </ul>
+
+                            <p style="margin-top:14px; font-weight:600; color:#2f855a;">
+                                ✔ 参考答案：C（4）
+                            </p>
+
+                            <p style="margin-top:6px; color:#4a5568; line-height:1.6;">
+                                ★ 解析：数字按顺序依次递增，3 后应为 4。
+                            </p>
+                        </div>
+
+                        <!-- ========== 题目 3 ========== -->
+                        <div style="
+                            padding:16px;
+                            border-radius:10px;
+                            border:1px solid #e2e8f0;
+                            background:#ffffff;
+                            margin-bottom:22px;
+                            box-shadow:0 2px 6px rgba(0,0,0,0.06);
+                        ">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <i class="fas fa-list-ol" style="color:#4a6fa5; font-size:20px;"></i>
+                                <h4 style="margin:0; color:#2d3748;">题目 3：数量填补</h4>
+                            </div>
+
+                            <p style="color:#4a5568;">请补全数字与物品数量的对应关系：</p>
+
+                            <ul style="margin-left:16px; color:#4a5568; line-height:1.7;">
+                                <li>数字 2 → （　　）本书</li>
+                                <li>数字 4 → （　　）支彩笔</li>
+                            </ul>
+
+                            <p style="margin-top:14px; font-weight:600; color:#2f855a;">
+                                ✔ 参考答案：2 本书；4 支彩笔
+                            </p>
+
+                            <p style="margin-top:6px; color:#4a5568; line-height:1.6;">
+                                ★ 解析：依据数字对应的数量填入正确的物品数量即可。
+                            </p>
+                        </div>
+
+                        <!-- ========== 题目 4 ========== -->
+                        <div style="
+                            padding:16px;
+                            border-radius:10px;
+                            border:1px solid #e2e8f0;
+                            background:#ffffff;
+                            margin-bottom:22px;
+                            box-shadow:0 2px 6px rgba(0,0,0,0.06);
+                        ">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <i class="fas fa-brain" style="color:#4a6fa5; font-size:20px;"></i>
+                                <h4 style="margin:0; color:#2d3748;">题目 4：规律推理</h4>
+                            </div>
+
+                            <p style="color:#4a5568;">
+                                已知数字 1 对应 1 个苹果，数字 2 对应 2 个苹果，
+                                那么数字 5 应该对应（　　）个苹果？
+                            </p>
+
+                            <ul style="margin-left:16px; color:#4a5568; line-height:1.7;">
+                                <li>A. 3</li>
+                                <li>B. 5</li>
+                                <li>C. 1</li>
+                            </ul>
+
+                            <p style="margin-top:14px; font-weight:600; color:#2f855a;">
+                                ✔ 参考答案：B（5 个）
+                            </p>
+
+                            <p style="margin-top:6px; color:#4a5568; line-height:1.6;">
+                                ★ 解析：每个数字对应与其相同数量的物体，属于等量匹配规律。
+                            </p>
+                        </div>
+
+                        <!-- ========== 题目 5 ========== -->
+                        <div style="
+                            padding:16px;
+                            border-radius:10px;
+                            border:1px solid #e2e8f0;
+                            background:#ffffff;
+                            box-shadow:0 2px 6px rgba(0,0,0,0.06);
+                        ">
+                            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                                <i class="fas fa-child" style="color:#4a6fa5; font-size:20px;"></i>
+                                <h4 style="margin:0; color:#2d3748;">题目 5：生活情境应用</h4>
+                            </div>
+
+                            <p style="color:#4a5568;">
+                                小明有 5 支铅笔，借给同桌 2 支，他还剩几支？
+                            </p>
+
+                            <p style="margin-top:14px; font-weight:600; color:#2f855a;">
+                                ✔ 参考答案：3 支
+                            </p>
+
+                            <p style="margin-top:6px; color:#4a5568; line-height:1.6;">
+                                ★ 解析：5 − 2 = 3，通过生活情境巩固数量减少的概念。
+                            </p>
+                        </div>
+                    </div>
+                `;
+            } else if (resource.interactiveType === 'count-write-extra-block') {
+                html = `
+                    <div class="interactive-section">
+                        <!-- 主标题 -->
+                        <h3 class="interactive-title">
+                            <i class="fas fa-pencil-alt"></i> 拓展练习：数一数，写一写
+                        </h3>
+
+                        <p style="margin-bottom:18px; color:#4a5568; line-height:1.6;">
+                            以下练习围绕"数一数、写一写"进行提升训练，帮助学生进一步巩固数量概念与数字表达能力。
+                        </p>
+
+                        <!-- ========== 题目卡片（统一视觉优化） ========== -->
+                        ${generateExerciseCard({
+                            icon: "fas fa-list-ol",
+                            title: "题目 1：数一数，写一写（纯文本）",
+                            question: "桌上有三本故事书，请问应该写下哪个数字？",
+                            answer: "3",
+                            explain: "根据题目描述共有三本书，因此写下数字 3。"
+                        })}
+
+                        ${generateExerciseCard({
+                            icon: "fas fa-calculator",
+                            title: "题目 2：选择正确的数量",
+                            question: "小兔子看到 5 只小鸟在树枝上，请问她应该选哪个数字？",
+                            options: ["A. 4", "B. 5", "C. 3"],
+                            answer: "B（5）",
+                            explain: "根据题干描述，小鸟数量为 5，因此应选择数字 5。"
+                        })}
+
+                        ${generateExerciseCard({
+                            icon: "fas fa-leaf",
+                            title: "题目 3：生活应用题",
+                            question: "小红摘了 4 朵花，又摘了 1 朵，现在她共有多少朵花？",
+                            answer: "5 朵",
+                            explain: "4 + 1 = 5，属于数量增加的生活情境题。"
+                        })}
+                    </div>
+                `;
+            }
+
+           else if (resource.interactiveType === 'circle-step-game') {
+    html = `
+        <div class="interactive-section">
+            <h3 class="interactive-title">
+                <i class="${resource.icon}"></i> ${resource.title}
+            </h3>
+            <p>${resource.description}</p>
+
+            <div class="counting-game" id="circleStepGame">
+                <div class="game-title" id="circleTaskTitle"></div>
+
+                <div class="game-objects" id="circleStepObjects"></div>
+
+                <div class="game-controls">
+                    <button class="game-btn" id="circleCheckBtn">检查</button>
+                    <button class="game-btn secondary" id="circleResetBtn">重新圈</button>
+                </div>
+
+                <div class="game-result" id="circleStepResult">
+                    点击物品进行圈选
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+            
+            sidebarContent.innerHTML = html;
+            
+            // 根据资源类型初始化对应的游戏
+            if (resource.interactiveType === 'counting-game') {
+                initCountingGame();
+            } else if (resource.interactiveType === 'matching-game') {
+                initMatchingGame();
+            } else if (resource.interactiveType === 'writing-practice') {
+                initWritingPractice();
+            } else if (resource.interactiveType === 'abacus-simulator') {
+                initAbacusSimulator();
+            }else if (resource.interactiveType === 'circle-step-game') {
+               initCircleStepGame();
+
+            }
+            else if (resource.interactiveType === 'count-write-fill') {
+    initCountWriteFill();
+}
+
+        }
+        
+        // ========== 统一的题目卡片生成函数 ==========
+        function generateExerciseCard({ icon, title, question, options = null, answer, explain }) {
+            return `
+            <div style="
+                padding:18px;
+                border-radius:12px;
+                border:1px solid #e2e8f0;
+                background:#ffffff;
+                margin-bottom:24px;
+                box-shadow:0 4px 10px rgba(0,0,0,0.05);
+            ">
+                <!-- 标题行 -->
+                <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+                    <i class="${icon}" style="color:#4a6fa5; font-size:20px;"></i>
+                    <h4 style="
+                        margin:0;
+                        color:#2d3748;
+                        padding-left:8px;
+                        border-left:3px solid #4a6fa5;
+                    ">
+                        ${title}
+                    </h4>
+                </div>
+
+                <!-- 题干 -->
+                <p style="color:#4a5568; line-height:1.6; margin-bottom:12px;">
+                    ${question}
+                </p>
+
+                <!-- 选项部分（可选） -->
+                ${options ? `
+                    <ul style="margin-left:18px; line-height:1.7; color:#4a5568; margin-bottom:12px;">
+                        ${options.map(op => `<li>${op}</li>`).join("")}
+                    </ul>
+                ` : ""}
+
+                <!-- 答案 -->
+                <div style="
+                    margin-top:10px;
+                    background:#f0fdf4;
+                    border-left:4px solid #2f855a;
+                    padding:10px 14px;
+                    border-radius:6px;
+                ">
+                    <p style="margin:0; font-weight:600; color:#2f855a;">
+                        ✔ 参考答案：${answer}
+                    </p>
+                </div>
+
+                <!-- 解析 -->
+                <div style="margin-top:10px; color:#4a5568; line-height:1.6;">
+                    <i class="fas fa-star" style="color:#f6ad55;"></i>
+                    <span>解析：${explain}</span>
+                </div>
+            </div>
+            `;
+        }
+        
+        // 关闭侧边栏
+        function closeSidebarHandler() {
+            resourceSidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            currentResourceId = null;
+        }
+        
+        // 初始化计数游戏
+        function initCountingGame() {
+            const gameObjects = document.querySelectorAll('.game-object');
+            const checkBtn = document.getElementById('checkCount');
+            const resetBtn = document.getElementById('resetCount');
+            const resultEl = document.getElementById('countingResult');
+            
+            // 确保元素存在
+            if (!gameObjects.length || !checkBtn || !resetBtn || !resultEl) return;
+            
+            let selectedCount = null;
+            let gameCompleted = false;
+            
+            // 点击物品
+            gameObjects.forEach(obj => {
+                obj.addEventListener('click', function() {
+                    if (gameCompleted) return;
+                    
+                    // 移除所有选中状态
+                    gameObjects.forEach(o => o.style.backgroundColor = 'white');
+                    
+                    // 设置当前选中状态
+                    this.style.backgroundColor = '#e8f0fe';
+                    selectedCount = parseInt(this.getAttribute('data-count'));
+                    
+                    resultEl.textContent = `你选择了 ${selectedCount} 个物品`;
+                    resultEl.style.color = 'var(--primary)';
+                });
+            });
+            
+            // 检查答案
+            checkBtn.addEventListener('click', function() {
+                if (selectedCount === null) {
+                    resultEl.textContent = '请先选择一个物品';
+                    resultEl.style.color = 'var(--accent)';
+                    return;
+                }
+                
+                const correctCount = 5; // 游戏设定正确答案是5
+                if (selectedCount === correctCount) {
+                    resultEl.textContent = '✓ 正确！你数对了5个物品！';
+                    resultEl.style.color = 'var(--secondary)';
+                    gameCompleted = true;
+                } else {
+                    resultEl.textContent = `再试一次！你数了${selectedCount}个，但正确答案是5个`;
+                    resultEl.style.color = 'var(--accent)';
+                }
+            });
+            
+            // 重置游戏
+            resetBtn.addEventListener('click', function() {
+                gameObjects.forEach(o => o.style.backgroundColor = 'white');
+                selectedCount = null;
+                gameCompleted = false;
+                resultEl.textContent = '点击上面的物品开始游戏';
+                resultEl.style.color = 'var(--text-dark)';
+            });
+        }
+        
+        // 初始化连线游戏
+        function initMatchingGame() {
+            const numberItems = document.querySelectorAll('.number-item');
+            const objectItems = document.querySelectorAll('.object-item');
+            const checkBtn = document.getElementById('checkMatching');
+            const resetBtn = document.getElementById('resetMatching');
+            const resultEl = document.getElementById('matchingResult');
+            const lineContainer = document.getElementById('matchingLineContainer');
+            
+            // 确保元素存在
+            if (!numberItems.length || !objectItems.length || !checkBtn || !resetBtn || !resultEl || !lineContainer) return;
+            
+            let selectedNumber = null;
+            let selectedObject = null;
+            let lines = [];
+            
+            // 点击数字
+            numberItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // 移除所有数字的选中状态
+                    numberItems.forEach(i => i.classList.remove('selected'));
+                    
+                    // 设置当前选中状态
+                    this.classList.add('selected');
+                    selectedNumber = this.getAttribute('data-number');
+                    
+                    resultEl.textContent = `你选择了数字 ${selectedNumber}，现在点击对应数量的物品`;
+                    resultEl.style.color = 'var(--primary)';
+                });
+            });
+            
+            // 点击物品
+            objectItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (!selectedNumber) {
+                        resultEl.textContent = '请先选择一个数字';
+                        resultEl.style.color = 'var(--accent)';
+                        return;
+                    }
+                    
+                    // 移除所有物品的选中状态
+                    objectItems.forEach(i => i.classList.remove('selected'));
+                    
+                    // 设置当前选中状态
+                    this.classList.add('selected');
+                    selectedObject = this.getAttribute('data-count');
+                    
+                    // 绘制连线
+                    drawMatchingLine(selectedNumber, selectedObject);
+                    
+                    resultEl.textContent = `数字 ${selectedNumber} 连线到 ${selectedObject} 个物品`;
+                    resultEl.style.color = 'var(--primary)';
+                });
+            });
+            
+            // 绘制连线
+            function drawMatchingLine(number, count) {
+                // 找到数字元素和物品元素的位置
+                const numberEl = document.querySelector(`.number-item[data-number="${number}"]`);
+                const objectEl = document.querySelector(`.object-item[data-count="${count}"]`);
+                
+                if (!numberEl || !objectEl) return;
+                
+                // 获取位置
+                const numberRect = numberEl.getBoundingClientRect();
+                const objectRect = objectEl.getBoundingClientRect();
+                const containerRect = lineContainer.getBoundingClientRect();
+                
+                // 计算相对位置
+                const startX = 0;
+                const startY = numberRect.top + numberRect.height/2 - containerRect.top;
+                const endX = containerRect.width;
+                const endY = objectRect.top + objectRect.height/2 - containerRect.top;
+                
+                // 创建连线元素
+                const line = document.createElement('div');
+                line.className = 'matching-line';
+                
+                // 计算连线长度和角度
+                const length = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2));
+                const angle = Math.atan2(endY - startY, endX - startX) * 180 / Math.PI;
+                
+                // 设置连线样式
+                line.style.width = `${length}px`;
+                line.style.left = `${startX}px`;
+                line.style.top = `${startY}px`;
+                line.style.transform = `rotate(${angle}deg)`;
+                
+                lineContainer.appendChild(line);
+                lines.push({number, count, element: line});
+            }
+            
+            // 检查连线
+            checkBtn.addEventListener('click', function() {
+                // 正确的匹配关系
+                const correctMatches = {
+                    '1': '1',
+                    '2': '2',
+                    '3': '3',
+                    '4': '4',
+                    '5': '5'
+                };
+                
+                let correctCount = 0;
+                let totalCount = lines.length;
+                
+                lines.forEach(line => {
+                    if (correctMatches[line.number] === line.count) {
+                        line.element.style.backgroundColor = 'var(--secondary)';
+                        correctCount++;
+                    } else {
+                        line.element.style.backgroundColor = 'var(--accent)';
+                    }
+                });
+                
+                if (totalCount === 5 && correctCount === 5) {
+                    resultEl.textContent = '✓ 完美！所有数字都正确连线了！';
+                    resultEl.style.color = 'var(--secondary)';
+                } else if (totalCount > 0) {
+                    resultEl.textContent = `你完成了 ${totalCount} 条连线，其中 ${correctCount} 条正确`;
+                    resultEl.style.color = correctCount === totalCount ? 'var(--secondary)' : 'var(--accent)';
+                } else {
+                    resultEl.textContent = '请先进行连线';
+                    resultEl.style.color = 'var(--accent)';
+                }
+            });
+            
+            // 重置连线
+            resetBtn.addEventListener('click', function() {
+                // 清除所有连线
+                lines.forEach(line => {
+                    if (line.element && line.element.parentNode) {
+                        line.element.parentNode.removeChild(line.element);
+                    }
+                });
+                
+                lines = [];
+                selectedNumber = null;
+                selectedObject = null;
+                
+                // 清除选中状态
+                numberItems.forEach(i => i.classList.remove('selected'));
+                objectItems.forEach(i => i.classList.remove('selected'));
+                
+                resultEl.textContent = '点击数字，然后点击对应数量的物品进行连线';
+                resultEl.style.color = 'var(--text-dark)';
+            });
+        }
+
+// 初始化圈一圈游戏
+   function initCircleStepGame() {
+    const tasks = [
+        { count: 1, label: '毽子', icon: '🪶' },
+        { count: 2, label: '哨子', icon: '📣' },
+        { count: 3, label: '橡皮', icon: '🧽' },
+        { count: 4, label: '鸟',   icon: '🐦' },
+        { count: 5, label: '羽毛球', icon: '🏸' }
+    ];
+
+    let step = 0;
+    let selected = new Set();
+    let nextTimer = null;     // ✅ 关键：记录“自动跳关”的定时器
+    let finished = false;     // ✅ 关键：记录是否完成全部关卡
+
+    const titleEl = document.getElementById('circleTaskTitle');
+    const objectsEl = document.getElementById('circleStepObjects');
+    const resultEl = document.getElementById('circleStepResult');
+
+    const checkBtn = document.getElementById('circleCheckBtn');
+    const resetBtn = document.getElementById('circleResetBtn');
+
+    // 防御：元素不存在就不初始化，避免 JS 报错导致侧边栏逻辑中断
+    if (!titleEl || !objectsEl || !resultEl || !checkBtn || !resetBtn) return;
+
+    function clearPendingTimer() {
+        if (nextTimer) {
+            clearTimeout(nextTimer);
+            nextTimer = null;
+        }
+    }
+
+    function renderStep() {
+        clearPendingTimer();
+        selected.clear();
+        objectsEl.innerHTML = '';
+        resultEl.textContent = '点击物品进行圈选';
+        resultEl.style.color = '';
+
+        // ✅ 如果已经完成，重新圈 = 回到第一关
+        if (finished) {
+            finished = false;
+            step = 0;
+        }
+
+        const task = tasks[step];
+        titleEl.innerHTML = `第 ${step + 1} 关：圈出 <strong>${task.count}</strong> 个 <strong>${task.label}</strong>`;
+
+        // ✅ 生成“同类干扰项”，保持一年级可控：总数 = 目标 + 2
+        const total = task.count + 2;
+
+        for (let i = 0; i < total; i++) {
+            const div = document.createElement('div');
+            div.className = 'game-object';
+            div.textContent = task.icon;
+
+            div.addEventListener('click', () => {
+                // 完成状态不再允许点选（避免完成后误触）
+                if (finished) return;
+
+                div.classList.toggle('selected');
+                if (selected.has(div)) selected.delete(div);
+                else selected.add(div);
+            });
+
+            objectsEl.appendChild(div);
+        }
+    }
+
+    checkBtn.addEventListener('click', () => {
+        if (finished) return;
+
+        const task = tasks[step];
+        const chosen = selected.size;
+
+        if (chosen === task.count) {
+            resultEl.textContent = '✅ 圈对了！';
+            resultEl.style.color = '#2f855a';
+
+            // ✅ 自动进入下一关（加定时器），但要可被“重新圈”取消
+            clearPendingTimer();
+            nextTimer = setTimeout(() => {
+                step += 1;
+
+                if (step < tasks.length) {
+                    renderStep();
+                } else {
+                    finished = true;
+                    titleEl.innerHTML = `🎉 太棒了！5 个任务全部完成`;
+                    objectsEl.innerHTML = '';
+                    resultEl.textContent = '点击“重新圈”可从第 1 关重新开始';
+                    resultEl.style.color = '#2f855a';
+                }
+            }, 600);
+        } else {
+            resultEl.textContent = chosen > task.count
+                ? `❌ 圈多了（圈了 ${chosen} 个），再试试`
+                : `❌ 圈少了（圈了 ${chosen} 个），再试试`;
+            resultEl.style.color = '#c53030';
+        }
+    });
+
+    resetBtn.addEventListener('click', () => {
+        // ✅ 重新圈：取消自动跳关 + 清空选择（完成后则回到第一关）
+        renderStep();
+    });
+
+    renderStep();
+}
+
+// 初始化数一数，写一写
+function initCountWriteFill() {
+    const inputs = document.querySelectorAll('.cw-input');
+    const result = document.getElementById('cwResult');
+
+    if (!inputs.length || !result) return;
+
+    document.getElementById('checkCW').onclick = () => {
+        let correct = true;
+
+        inputs.forEach(input => {
+            if (input.value.trim() !== input.dataset.answer) {
+                correct = false;
+                input.style.borderColor = '#c53030';
+            } else {
+                input.style.borderColor = '#2f855a';
+            }
+        });
+
+        result.textContent = correct
+            ? '✅ 全部填写正确，真棒！'
+            : '❌ 有填写不正确的地方，再检查一下';
+        result.style.color = correct ? '#2f855a' : '#c53030';
+    };
+
+    document.getElementById('resetCW').onclick = () => {
+        inputs.forEach(i => {
+            i.value = '';
+            i.style.borderColor = '';
+        });
+        result.textContent = '数一数，再填写数字';
+        result.style.color = '';
+    };
+}
+
+
+
+        
+        // 初始化书写练习
+        function initWritingPractice() {
+            const canvas = document.getElementById('writingCanvas');
+            const ctx = canvas.getContext('2d');
+            const clearBtn = document.getElementById('clearCanvas');
+            const saveBtn = document.getElementById('saveWriting');
+            const numberBtns = document.querySelectorAll('.writing-number-btn');
+            
+            // 确保元素存在
+            if (!canvas || !ctx || !clearBtn || !saveBtn) return;
+            
+            // 设置画布样式
+            ctx.strokeStyle = 'var(--primary)';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            // 开始绘制
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                [lastX, lastY] = getMousePos(canvas, e);
+            });
+            
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                const touch = e.touches[0];
+                [lastX, lastY] = getTouchPos(canvas, touch);
+            });
+            
+            // 绘制过程
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                drawTouch(touch);
+            });
+            
+            // 结束绘制
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseout', () => isDrawing = false);
+            canvas.addEventListener('touchend', () => isDrawing = false);
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                e.preventDefault();
+                
+                const [x, y] = getMousePos(canvas, e);
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                [lastX, lastY] = [x, y];
+            }
+            
+            function drawTouch(touch) {
+                if (!isDrawing) return;
+                
+                const [x, y] = getTouchPos(canvas, touch);
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                [lastX, lastY] = [x, y];
+            }
+            
+            function getMousePos(canvas, e) {
+                const rect = canvas.getBoundingClientRect();
+                return [
+                    e.clientX - rect.left,
+                    e.clientY - rect.top
+                ];
+            }
+            
+            function getTouchPos(canvas, touch) {
+                const rect = canvas.getBoundingClientRect();
+                return [
+                    touch.clientX - rect.left,
+                    touch.clientY - rect.top
+                ];
+            }
+            
+            // 清除画布
+            clearBtn.addEventListener('click', () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+            
+            // 保存练习
+            saveBtn.addEventListener('click', () => {
+                // 创建一个临时的a标签用于下载
+                const dataURL = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = dataURL;
+                link.download = '数字书写练习.png';
+                link.click();
+                
+                // 显示保存成功的消息
+                const originalText = saveBtn.innerHTML;
+                saveBtn.innerHTML = '<i class="fas fa-check"></i> 已保存';
+                setTimeout(() => {
+                    saveBtn.innerHTML = originalText;
+                }, 1500);
+            });
+            
+            // 数字按钮 - 显示示例
+            if (numberBtns.length > 0) {
+                numberBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const number = this.getAttribute('data-number');
+                        
+                        // 清除画布
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        
+                        // 设置文本样式
+                        ctx.font = '80px Arial';
+                        ctx.fillStyle = 'var(--primary-light)';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        
+                        // 在画布中央绘制数字
+                        ctx.fillText(number, canvas.width/2, canvas.height/2);
+                        
+                        // 提示用户描红
+                        ctx.font = '16px Arial';
+                        ctx.fillStyle = 'var(--text-light)';
+                        ctx.fillText(`请描红数字 ${number}`, canvas.width/2, canvas.height - 10);
+                    });
+                });
+            }
+        }
+        
+        // 初始化拨珠器模拟
+        function initAbacusSimulator() {
+            const abacusRod = document.getElementById('abacusRod');
+            const abacusCount = document.getElementById('abacusCount');
+            const abacusReset = document.getElementById('abacusReset');
+            const abacusCheck = document.getElementById('abacusCheck');
+            
+            // 确保元素存在
+            if (!abacusRod || !abacusCount || !abacusReset || !abacusCheck) return;
+            
+            // 创建5个珠子
+            let beadCount = 0;
+            const totalBeads = 5;
+            
+            // 清空现有珠子
+            abacusRod.innerHTML = '';
+            
+            // 创建珠子
+            for (let i = 0; i < totalBeads; i++) {
+                const bead = document.createElement('div');
+                bead.className = 'abacus-bead';
+                bead.style.left = `${20 + i * 60}px`;
+                bead.dataset.index = i;
+                bead.dataset.active = 'false';
+                
+                // 点击珠子切换状态
+                bead.addEventListener('click', function() {
+                    const isActive = this.dataset.active === 'true';
+                    this.dataset.active = !isActive;
+                    
+                    if (!isActive) {
+                        this.classList.add('active');
+                        beadCount++;
+                    } else {
+                        this.classList.remove('active');
+                        beadCount--;
+                    }
+                    
+                    abacusCount.textContent = `当前数量: ${beadCount}`;
+                });
+                
+                abacusRod.appendChild(bead);
+            }
+            
+            // 重置拨珠器
+            abacusReset.addEventListener('click', function() {
+                const beads = document.querySelectorAll('.abacus-bead');
+                beads.forEach(bead => {
+                    bead.dataset.active = 'false';
+                    bead.classList.remove('active');
+                });
+                beadCount = 0;
+                abacusCount.textContent = `当前数量: ${beadCount}`;
+            });
+            
+            // 检查数字
+            abacusCheck.addEventListener('click', function() {
+                const targetNumber = Math.floor(Math.random() * 5) + 1; // 随机1-5
+                
+                if (beadCount === targetNumber) {
+                    abacusCount.textContent = `✓ 正确！你拨了${beadCount}个珠子，目标数字是${targetNumber}`;
+                    abacusCount.style.color = 'var(--secondary)';
+                } else {
+                    abacusCount.textContent = `再试一次！你拨了${beadCount}个珠子，但目标数字是${targetNumber}`;
+                    abacusCount.style.color = 'var(--accent)';
+                }
+            });
+        }
+        
+        // 导航到指定部分
+        function navigateToSection(sectionId) {
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                // 更新导航链接状态
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${sectionId}`) {
+                        link.classList.add('active');
+                    }
+                });
+                
+                // 平滑滚动到目标部分
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // 更新当前部分
+                currentSection = sectionId.replace('section-', '');
+                
+                // 更新当前部分指示器
+                const sectionNames = {
+                    'analysis': '教学内容分析',
+                    'situation': '学情分析',
+                    'objectives': '教学目标',
+                    'difficulty': '教学重难点',
+                    'process': '教学过程',
+                    'preparation': '教学准备'
+                };
+                
+                if (sectionNames[currentSection]) {
+                    currentSectionIndicator.textContent = sectionNames[currentSection];
+                    currentSectionIndicator.style.display = 'block';
+                    
+                    // 3秒后隐藏指示器
+                    setTimeout(() => {
+                        currentSectionIndicator.style.display = 'none';
+                    }, 3000);
+                }
+                
+                // 在移动端，点击导航后收起导航栏
+                if (window.innerWidth <= 768) {
+                    leftNav.classList.remove('expanded');
+                }
+            }
+        }
+        
+        // 滚动到顶部
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 检查滚动位置，显示/隐藏返回顶部按钮
+        function checkScrollPosition() {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+            
+            // 检测当前可见的部分
+            const sections = document.querySelectorAll('.section');
+            let currentVisibleSection = null;
+            
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= 150 && rect.bottom >= 150) {
+                    currentVisibleSection = section.id;
+                }
+            });
+            
+            if (currentVisibleSection) {
+                // 更新导航链接状态
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentVisibleSection}`) {
+                        link.classList.add('active');
+                        currentSection = currentVisibleSection.replace('section-', '');
+                    }
+                });
+            }
+        }
+        
+        // 为文内资源链接添加点击事件
+        inlineResources.forEach(resource => {
+            resource.addEventListener('click', function(e) {
+                e.preventDefault();
+                const resourceId = this.getAttribute('data-resource');
+                openSidebar(resourceId);
+            });
+        });
+        
+        // 为导航链接添加点击事件
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                navigateToSection(targetId);
+            });
+        });
+        
+        // 为全局资源入口添加点击事件
+        resourceEntry.addEventListener('click', function() {
+            openInteractiveSidebar();
+        });
+        
+        // 为关闭按钮添加事件
+        closeSidebar.addEventListener('click', closeSidebarHandler);
+        
+        // 为遮罩层添加事件
+        overlay.addEventListener('click', closeSidebarHandler);
+        
+        // 为返回顶部按钮添加事件
+        backToTop.addEventListener('click', scrollToTop);
+        
+        // 为移动端导航栏头部添加点击事件（展开/收起）
+        const navHeader = document.querySelector('.nav-header');
+        if (navHeader) {
+            navHeader.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    leftNav.classList.toggle('expanded');
+                }
+            });
+        }
+        
+        // 监听滚动事件
+        window.addEventListener('scroll', checkScrollPosition);
+        
+        // 页面加载完成
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('优化版教案页面加载完成');
+            console.log('点击文内资源链接（如"拨数活动"）可打开右侧互动侧边栏');
+            console.log('点击右下角立方体图标可打开完整的互动游戏集合');
+            
+            // 初始检查滚动位置
+            checkScrollPosition();
+        });
+
+        // === 侧边栏可拖动调整宽度 ===
+        const sidebar = document.getElementById("resourceSidebar");
+        const resizer = document.getElementById("sidebarResizer");
+        let isResizing = false;
+
+        resizer.addEventListener("mousedown", function(e) {
+            isResizing = true;
+            document.body.style.cursor = "ew-resize";
+        });
+
+        document.addEventListener("mousemove", function(e) {
+            if (!isResizing) return;
+            const newWidth = window.innerWidth - e.clientX;
+            if (newWidth >= 260 && newWidth <= 700) {
+                sidebar.style.width = newWidth + "px";
+            }
+        });
+
+        document.addEventListener("mouseup", function() {
+            isResizing = false;
+            document.body.style.cursor = "default";
+        });
+    </script>
+</body>
+</html>

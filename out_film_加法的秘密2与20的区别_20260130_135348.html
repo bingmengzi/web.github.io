@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加法的秘密：2与20的区别 - 互动讲解</title>
+    <style>
+        :root {
+            --bg-dark: #0f1115;
+            --bg-panel: rgba(20, 25, 35, 0.9);
+            --primary: #4a90e2;
+            --accent-orange: #f5a623;
+            --accent-green: #7ed321;
+            --text-main: #ffffff;
+            --text-sub: #8e9aaf;
+            --grid-color: rgba(74, 144, 226, 0.1);
+        }
+
+        * { box-sizing: border-box; user-select: none; }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* --- 16:9 视口舞台容器：保证画面始终按 16:9 呈现，必要时留黑边 --- */
+        #stage-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            overflow: hidden;
+        }
+
+        /* --- 舞台容器 (2K 分辨率基准) --- */
+        #app-container {
+            width: 2560px;
+            height: 1440px;
+            position: relative;
+            background: var(--bg-dark);
+            overflow: hidden;
+            transform-origin: center center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            border-radius: 18px;
+        }
+
+        /* --- 镜头与图层 --- */
+        #camera-rig {
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 1.2s cubic-bezier(0.25, 0.1, 0.25, 1); /* 丝滑运镜 */
+        }
+
+        .layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .layer.active { opacity: 1; }
+
+        /* --- 背景动效 --- */
+        .bg-grid {
+            background-image: 
+                linear-gradient(var(--grid-color) 1px, transparent 1px),
+                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 100px 100px;
+            width: 200%;
+            height: 200%;
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            transform: perspective(500px) rotateX(20deg);
+            animation: grid-float 60s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes grid-float {
+            0% { transform: perspective(500px) rotateX(20deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(20deg) translateY(50px); }
+        }
+
+        /* --- 视觉元素组件 --- */
+        
+        /* 1. 标题 */
+        .hero-text {
+            font-size: 120px;
+            font-weight: 800;
+            text-shadow: 0 0 30px rgba(74, 144, 226, 0.5);
+            animation: float-text 3s ease-in-out infinite;
+        }
+
+        /* 2. Base 10 Blocks (积木) */
+        .blocks-container {
+            display: flex;
+            gap: 40px;
+            align-items: flex-end;
+        }
+        
+        .place-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            min-width: 100px;
+            padding: 20px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px dashed rgba(255,255,255,0.1);
+            position: relative;
+        }
+        
+        .place-label {
+            position: absolute;
+            bottom: -40px;
+            font-size: 24px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .ten-bar {
+            width: 30px;
+            height: 300px;
+            background: linear-gradient(180deg, #3a7bd5, #3a6073);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 0 15px rgba(58, 123, 213, 0.4);
+            display: flex;
+            flex-direction: column;
+        }
+        .ten-bar div { flex: 1; border-bottom: 1px solid rgba(0,0,0,0.2); }
+
+        .one-block {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #f5a623, #f76b1c);
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 0 10px rgba(245, 166, 35, 0.4);
+            margin-bottom: 5px;
+        }
+
+        /* 3. 等式 */
+        .equation-display {
+            font-size: 100px;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        .highlight-num { color: var(--accent-orange); font-weight: bold; animation: pulse-glow 1.5s infinite; }
+        .solved-num { color: var(--accent-green); text-shadow: 0 0 20px rgba(126, 211, 33, 0.6); }
+
+        /* 4. 动效类 */
+        @keyframes float-text { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes pulse-glow { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.3); } }
+        
+        /* 动态生成的动画类 */
+        .anim-merge-ones { animation: move-to-ones 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+        @keyframes move-to-ones {
+            0% { transform: translate(400px, -100px) scale(1.2); opacity: 0; }
+            100% { transform: translate(0, 0) scale(1); opacity: 1; }
+        }
+
+        .anim-merge-tens { animation: move-to-tens 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+        @keyframes move-to-tens {
+            0% { transform: translate(400px, 0) scale(1.2); opacity: 0; }
+            100% { transform: translate(0, 0) scale(1); opacity: 1; }
+        }
+
+        /* --- UI 界面 --- */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* 让点击穿透到交互层 */
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .top-bar { padding: 40px; display: flex; justify-content: space-between; }
+        .title-tag { background: rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 20px; backdrop-filter: blur(10px); }
+
+        .narration-panel {
+            position: absolute;
+            top: 150px;
+            right: 40px;
+            width: 400px;
+            background: var(--bg-panel);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            transform: translateX(110%);
+            transition: transform 0.3s ease;
+            pointer-events: auto;
+        }
+        .narration-panel.open { transform: translateX(0); }
+        .narration-text { font-size: 24px; line-height: 1.5; color: #ddd; }
+
+        .subtitle-area {
+            text-align: center;
+            margin-bottom: 140px; /* 给控制条留空间 */
+        }
+        .subtitle-text {
+            background: rgba(0,0,0,0.6);
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 32px;
+            display: inline-block;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+        }
+
+        /* 字幕更“视频化”：快速切换 + 轻微打字效果 */
+        .subtitle-text.fast {
+            transition: transform 0.12s ease, opacity 0.12s ease;
+            will-change: transform, opacity;
+        }
+        .subtitle-text.bump {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        /* 旁白面板让位给 16:9：避免窄屏时遮挡 */
+        @media (max-width: 1200px) {
+            .narration-panel {
+                width: 340px;
+                right: 20px;
+            }
+            .subtitle-text { font-size: 28px; }
+            .equation-display { font-size: 84px; }
+        }
+
+        .controls-area {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            pointer-events: auto;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            transition: transform 0.1s;
+        }
+        .play-btn:active { transform: scale(0.95); }
+
+        .progress-container { flex: 1; height: 10px; background: rgba(255,255,255,0.2); border-radius: 5px; cursor: pointer; position: relative; }
+        .progress-bar { height: 100%; background: var(--primary); width: 0%; border-radius: 5px; position: relative; }
+        .progress-thumb { 
+            position: absolute; right: -8px; top: -5px; width: 20px; height: 20px; 
+            background: white; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); 
+            transform: scale(0); transition: transform 0.2s;
+        }
+        .progress-container:hover .progress-thumb { transform: scale(1); }
+
+        .time-display { margin-left: 20px; font-family: monospace; font-size: 24px; width: 150px; text-align: right; }
+
+        /* --- 交互弹窗 --- */
+        #interaction-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: none; /* JS 控制 flex */
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #interaction-overlay.show { opacity: 1; }
+
+        .quiz-card {
+            background: #1e2330;
+            width: 600px;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 50px rgba(74, 144, 226, 0.3);
+            text-align: center;
+            pointer-events: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #interaction-overlay.show .quiz-card { transform: scale(1); }
+
+        .quiz-question { font-size: 36px; margin-bottom: 30px; }
+        .quiz-options { display: flex; gap: 20px; justify-content: center; }
+        .quiz-btn {
+            padding: 15px 40px;
+            font-size: 28px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-3px); }
+        .quiz-btn.correct { background: var(--accent-green); border-color: var(--accent-green); }
+        .quiz-btn.wrong { background: #e74c3c; border-color: #e74c3c; animation: shake 0.4s; }
+
+        .feedback-text { margin-top: 20px; font-size: 24px; min-height: 36px; color: var(--accent-green); opacity: 0; }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
+    </style>
+</head>
+<body>
+
+    <div id="stage-container">
+    <div id="app-container">
+        <!-- 3D 舞台 / 镜头 -->
+        <div id="camera-rig">
+            <div class="bg-grid"></div>
+            
+            <!-- 动态层容器 -->
+            <div id="layers-group">
+                <!-- 由 JS 动态填充 -->
+            </div>
+        </div>
+
+        <!-- UI 层 -->
+        <div id="ui-layer">
+            <div class="top-bar">
+                <div class="title-tag" id="main-title">Math Lab</div>
+                <button class="title-tag" onclick="toggleNarration()" style="cursor:pointer">📜 旁白面板</button>
+            </div>
+
+            <div class="narration-panel" id="narration-panel">
+                <div class="narration-text" id="narration-text">...</div>
+            </div>
+
+            <div class="subtitle-area">
+                <div class="subtitle-text" id="subtitle-text">准备开始...</div>
+            </div>
+
+            <div class="controls-area">
+                <button class="play-btn" id="play-btn">▶</button>
+                <div class="progress-container" id="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                    <div class="progress-thumb"></div>
+                </div>
+                <div class="time-display" id="time-display">00:00 / 01:05</div>
+            </div>
+        </div>
+
+        <!-- 交互层 -->
+        <div id="interaction-overlay">
+            <div class="quiz-card">
+                <div class="quiz-question" id="quiz-prompt">Question?</div>
+                <div class="quiz-options" id="quiz-options"></div>
+                <div class="feedback-text" id="quiz-feedback">Feedback</div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+<script>
+/**
+ * 核心逻辑引擎
+ */
+
+// 1. 数据定义 (Timeline JSON)
+const timelineData = {
+    "durationSec": 65, 
+    "timeline": [
+        {
+            "tStart": 0, "tEnd": 5, "id": "intro",
+            "subtitle": "两个看起来很像的挑战",
+            "camera": "scale(1) translate(0,0)",
+            "narration": "欢迎回到数学实验室。今天我们有两个看起来很像，但结果完全不同的挑战。",
+            "render": `<div class="hero-text">26 + 2 <span style="color:var(--text-sub); font-size:0.6em">vs</span> 26 + 20</div>`
+        },
+        {
+            "tStart": 5, "tEnd": 10, "id": "setup",
+            "subtitle": "26 = 2个十 + 6个一",
+            "camera": "scale(1.5) translate(0, 100px)",
+            "narration": "首先，让我们请出主角——数字 26。看，它由两根“十位棒”和六个“个位块”组成。",
+            "render": createBlockVisual(2, 6, false)
+        },
+        {
+            "tStart": 10, "tEnd": 15, "id": "prob1-start",
+            "subtitle": "挑战一：26 + 2",
+            "camera": "scale(1.2) translate(200px, 0)",
+            "narration": "第一个挑战是：26 加上 2。这里的 2，仅仅是两个小方块。",
+            "render": `
+                <div style="display:flex; align-items:center; gap:50px;">
+                    ${createBlockVisual(2, 6, false)}
+                    <div style="font-size:80px; font-family:monospace;">+</div>
+                    <div class="place-column" style="border-color:var(--accent-orange)">
+                        <div class="one-block"></div><div class="one-block"></div>
+                        <div class="place-label">2</div>
+                    </div>
+                </div>`
+        },
+        {
+            "tStart": 15, "tEnd": 20, "id": "prob1-process",
+            "subtitle": "个位找个位",
+            "camera": "scale(2.5) translate(-300px, -100px)", // Focus on ones
+            "narration": "这两个小方块应该去哪里？它们当然要找同伴！个位找个位。",
+            "render": `
+                <div style="display:flex; align-items:flex-end; gap:20px; position:relative;">
+                    <div class="place-column">
+                        <div class="ten-bar"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                        <div class="ten-bar"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                        <div class="place-label">十位</div>
+                    </div>
+                    <div class="place-column" id="ones-col-target">
+                        <!-- 6 ones -->
+                        ${Array(6).fill('<div class="one-block"></div>').join('')}
+                        <!-- The moving ones -->
+                        <div style="position:absolute; bottom:20px; right:-200px;" class="anim-merge-ones">
+                            <div class="one-block" style="border-color:#fff"></div>
+                            <div class="one-block" style="border-color:#fff"></div>
+                        </div>
+                        <div class="place-label">个位</div>
+                    </div>
+                </div>`
+        },
+        {
+            "tStart": 20, "tEnd": 26, "id": "prob1-result",
+            "subtitle": "6 + 2 = 8 → 28",
+            "camera": "scale(1) translate(0,0)",
+            "narration": "6 个一加上 2 个一，变成了 8。十位没变，所以结果是 28。",
+            "render": `<div class="equation-display">26 + <span class="highlight-num">2</span> = <span class="solved-num">28</span></div>`,
+            "interaction": {
+                "prompt": "快速测试：35 + 3 = ?",
+                "options": [{label:"38", correct:true}, {label:"65", correct:false}],
+                "feedback": {correct:"太棒了！个位 5+3=8，十位不变。", wrong:"注意哦，3 是个位数，要加在 5 上面。"}
+            }
+        },
+        {
+            "tStart": 26, "tEnd": 32, "id": "transition",
+            "subtitle": "挑战二：26 + 20",
+            "camera": "scale(1) translate(-100px, 0)",
+            "narration": "很好。现在把画面清空，我们来看看第二个挑战：26 加上 20。",
+            "render": `<div class="equation-display">26 + <span class="highlight-num" style="color:var(--accent-green)">20</span> = ?</div>`
+        },
+        {
+            "tStart": 32, "tEnd": 38, "id": "prob2-visual",
+            "subtitle": "20 = 2个十",
+            "camera": "scale(1.5) translate(0, 50px)",
+            "narration": "这次的 20，可不是小方块了。它是两根巨大的“十位棒”。",
+            "render": `
+                <div style="display:flex; gap:50px; align-items:center;">
+                    ${createBlockVisual(2, 6, false)}
+                    <div style="font-size:80px">+</div>
+                    <div class="place-column" style="border-color:var(--accent-green)">
+                        <div class="ten-bar" style="filter:hue-rotate(90deg)"><div></div></div>
+                        <div class="ten-bar" style="filter:hue-rotate(90deg)"><div></div></div>
+                        <div class="place-label">20</div>
+                    </div>
+                </div>`
+        },
+        {
+            "tStart": 38, "tEnd": 44, "id": "prob2-process",
+            "subtitle": "十位找十位",
+            "camera": "scale(2.5) translate(300px, -100px)", // Focus on tens
+            "narration": "它们不能去挤个位的小房间。十位必须找十位！",
+            "render": `
+                <div style="display:flex; align-items:flex-end; gap:20px; position:relative;">
+                    <div class="place-column">
+                        <div class="ten-bar"><div></div></div>
+                        <div class="ten-bar"><div></div></div>
+                        <!-- The moving tens -->
+                        <div style="position:absolute; bottom:20px; right:-250px; display:flex; gap:5px;" class="anim-merge-tens">
+                            <div class="ten-bar" style="filter:hue-rotate(90deg); border-color:#fff"><div></div></div>
+                            <div class="ten-bar" style="filter:hue-rotate(90deg); border-color:#fff"><div></div></div>
+                        </div>
+                        <div class="place-label">十位</div>
+                    </div>
+                    <div class="place-column">
+                        ${Array(6).fill('<div class="one-block"></div>').join('')}
+                        <div class="place-label">个位</div>
+                    </div>
+                </div>`
+        },
+        {
+            "tStart": 44, "tEnd": 50, "id": "prob2-result",
+            "subtitle": "20 + 20 = 40 → 46",
+            "camera": "scale(1) translate(0,0)",
+            "narration": "2 个十加上 2 个十，变成了 4 个十。个位没变，结果是 46。",
+            "render": `<div class="equation-display">26 + <span class="highlight-num" style="color:var(--accent-green)">20</span> = <span class="solved-num">46</span></div>`,
+            "interaction": {
+                "prompt": "试试看：35 + 30 = ?",
+                "options": [{label:"38", correct:false}, {label:"65", correct:true}],
+                "feedback": {correct:"正确！3个十加3个十等于6个十。", wrong:"哎呀，30 是整十数，要加在十位上哦。"}
+            }
+        },
+        {
+            "tStart": 50, "tEnd": 65, "id": "compare",
+            "subtitle": "位置决定一切",
+            "camera": "scale(0.9) translate(0,0)",
+            "narration": "发现了吗？加几，就变个位；加几十，就变十位。位置决定了一切。",
+            "render": `
+                <div style="display:flex; gap:100px; width:80%;">
+                    <div style="flex:1; background:rgba(255,255,255,0.05); padding:40px; border-radius:20px; border:2px solid var(--accent-orange)">
+                        <h2>加个位</h2>
+                        <div style="font-size:60px">26 + 2 = 28</div>
+                    </div>
+                    <div style="flex:1; background:rgba(255,255,255,0.05); padding:40px; border-radius:20px; border:2px solid var(--accent-green)">
+                        <h2>加十位</h2>
+                        <div style="font-size:60px">26 + 20 = 46</div>
+                    </div>
+                </div>`
+        }
+    ]
+};
+
+// 辅助函数：生成积木HTML
+function createBlockVisual(tens, ones, highlightTens) {
+    let tenHtml = '';
+    for(let i=0; i<tens; i++) tenHtml += `<div class="ten-bar ${highlightTens?'highlight':''}"><div></div></div>`;
+    
+    let oneHtml = '';
+    for(let i=0; i<ones; i++) oneHtml += `<div class="one-block"></div>`;
+
+    return `
+    <div class="blocks-container">
+        <div class="place-column">
+            ${tenHtml}
+            <div class="place-label">十位</div>
+        </div>
+        <div class="place-column">
+            ${oneHtml}
+            <div class="place-label">个位</div>
+        </div>
+    </div>
+    `;
+}
+
+// 2. 状态管理
+const state = {
+    currentTime: 0,
+    isPlaying: false,
+    currentBeatIndex: -1,
+    lastFrameTime: 0,
+    interactionPending: false,
+    // 字幕/旁白节奏控制
+    subtitleSeq: [],
+    subtitleIdx: 0,
+    subtitleNextAt: 0,
+    subtitleLastBeatId: null
+};
+
+// 3. DOM 引用
+const el = {
+    app: document.getElementById('app-container'),
+    camera: document.getElementById('camera-rig'),
+    layers: document.getElementById('layers-group'),
+    playBtn: document.getElementById('play-btn'),
+    progressBar: document.getElementById('progress-bar'),
+    progressContainer: document.getElementById('progress-container'),
+    timeDisplay: document.getElementById('time-display'),
+    subtitle: document.getElementById('subtitle-text'),
+    narration: document.getElementById('narration-text'),
+    narrationPanel: document.getElementById('narration-panel'),
+    interaction: {
+        overlay: document.getElementById('interaction-overlay'),
+        prompt: document.getElementById('quiz-prompt'),
+        options: document.getElementById('quiz-options'),
+        feedback: document.getElementById('quiz-feedback')
+    }
+};
+
+// 4. 初始化
+function init() {
+    resizeApp();
+    window.addEventListener('resize', resizeApp);
+    
+    // 生成所有图层
+    timelineData.timeline.forEach((beat, index) => {
+        const layer = document.createElement('div');
+        layer.className = 'layer';
+        layer.id = `layer-${index}`;
+        layer.innerHTML = beat.render;
+        el.layers.appendChild(layer);
+    });
+
+    // 绑定事件
+    el.playBtn.addEventListener('click', togglePlay);
+    el.progressContainer.addEventListener('click', seek);
+    
+    // 启动循环
+    requestAnimationFrame(gameLoop);
+}
+
+// --- 字幕工具：把一句旁白拆成更短、更视频感的片段 ---
+function splitNarrationToPhrases(text) {
+    if (!text) return [];
+    // 按中文停顿符号切，再二次切分长句
+    const raw = text
+        .split(/[，。？！；]/)
+        .map(s => s.trim())
+        .filter(Boolean);
+
+    const out = [];
+    for (const s of raw) {
+        if (s.length <= 14) {
+            out.push(s);
+        } else {
+            // 过长则按 10~14 字切成 2-3 句
+            let i = 0;
+            while (i < s.length) {
+                out.push(s.slice(i, i + 12));
+                i += 12;
+            }
+        }
+    }
+    return out.slice(0, 6); // 防止过多
+}
+
+function setSubtitleFast(text) {
+    const elSub = el.subtitle;
+    elSub.classList.add('fast');
+    elSub.style.opacity = '0.75';
+    elSub.classList.remove('bump');
+    // 下一帧触发一个小 bump，像剪辑点
+    requestAnimationFrame(() => {
+        elSub.textContent = text;
+        elSub.style.opacity = '1';
+        elSub.classList.add('bump');
+        setTimeout(() => elSub.classList.remove('bump'), 160);
+    });
+}
+
+// 5. 渲染循环
+function gameLoop(timestamp) {
+    if (!state.lastFrameTime) state.lastFrameTime = timestamp;
+    const dt = (timestamp - state.lastFrameTime) / 1000;
+    state.lastFrameTime = timestamp;
+
+    if (state.isPlaying && !state.interactionPending) {
+        state.currentTime += dt;
+        if (state.currentTime >= timelineData.durationSec) {
+            state.currentTime = timelineData.durationSec;
+            state.isPlaying = false;
+            updatePlayBtn();
+        }
+    }
+
+    updateStage();
+    updateUI();
+
+    requestAnimationFrame(gameLoop);
+}
+
+// 6. 核心更新逻辑
+function updateStage() {
+    // 找到当前时间对应的 Beat
+    let activeIndex = -1;
+    for (let i = 0; i < timelineData.timeline.length; i++) {
+        const beat = timelineData.timeline[i];
+        if (state.currentTime >= beat.tStart && state.currentTime < beat.tEnd) {
+            activeIndex = i;
+            break;
+        }
+    }
+
+    // 状态变更检测
+    if (activeIndex !== state.currentBeatIndex) {
+        // 退出旧层
+        if (state.currentBeatIndex !== -1) {
+            document.getElementById(`layer-${state.currentBeatIndex}`).classList.remove('active');
+        }
+        
+        // 进入新层
+        if (activeIndex !== -1) {
+            const beat = timelineData.timeline[activeIndex];
+            const layer = document.getElementById(`layer-${activeIndex}`);
+            layer.classList.add('active');
+            
+            // 更新镜头
+            el.camera.style.transform = beat.camera;
+            
+            // 更新文字
+            // 旁白面板保留原句；底部字幕改为更快的短句序列
+            el.narration.innerText = beat.narration;
+            state.subtitleSeq = [beat.subtitle, ...splitNarrationToPhrases(beat.narration)];
+            state.subtitleIdx = 0;
+            state.subtitleNextAt = state.currentTime + 0.35; // 进入段落后更快出现
+            state.subtitleLastBeatId = beat.id || String(activeIndex);
+            setSubtitleFast(state.subtitleSeq[0] || beat.subtitle || '');
+            
+            // 检查是否有交互（在片段结束时触发）
+            // 逻辑移动到 updateUI 的进度检查中
+        }
+        
+        state.currentBeatIndex = activeIndex;
+    }
+}
+
+function updateUI() {
+    // 进度条
+    const pct = (state.currentTime / timelineData.durationSec) * 100;
+    el.progressBar.style.width = `${pct}%`;
+    
+    // 时间显示
+    const curM = Math.floor(state.currentTime / 60).toString().padStart(2, '0');
+    const curS = Math.floor(state.currentTime % 60).toString().padStart(2, '0');
+    const totM = Math.floor(timelineData.durationSec / 60).toString().padStart(2, '0');
+    const totS = Math.floor(timelineData.durationSec % 60).toString().padStart(2, '0');
+    el.timeDisplay.innerText = `${curM}:${curS} / ${totM}:${totS}`;
+
+    // 交互触发检测 (在 Beat 结束前 0.1秒触发)
+    if (state.currentBeatIndex !== -1) {
+        const beat = timelineData.timeline[state.currentBeatIndex];
+
+        // --- 更快的字幕切换：在同一段内每 0.7~1.1 秒切换一次 ---
+        if (!state.interactionPending && state.subtitleSeq && state.subtitleSeq.length) {
+            // 随时间微抖动，避免机械感
+            const span = 0.75 + ((state.currentBeatIndex * 37) % 10) * 0.04; // 0.75 ~ 1.11
+            if (state.currentTime >= state.subtitleNextAt) {
+                state.subtitleIdx = Math.min(state.subtitleIdx + 1, state.subtitleSeq.length - 1);
+                const next = state.subtitleSeq[state.subtitleIdx];
+                if (next) setSubtitleFast(next);
+                state.subtitleNextAt = state.currentTime + span;
+            }
+        }
+
+        if (beat.interaction && !beat.interactionDone && state.currentTime > beat.tEnd - 0.5) {
+            triggerInteraction(beat);
+        }
+    }
+}
+
+// 7. 交互系统
+function triggerInteraction(beat) {
+    state.interactionPending = true;
+    state.isPlaying = false;
+    updatePlayBtn();
+    beat.interactionDone = true; // 标记已触发，防止重复
+
+    const data = beat.interaction;
+    el.interaction.prompt.innerText = data.prompt;
+    el.interaction.options.innerHTML = '';
+    el.interaction.feedback.style.opacity = '0';
+    
+    data.options.forEach(opt => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn';
+        btn.innerText = opt.label;
+        btn.onclick = () => {
+            if (opt.correct) {
+                btn.classList.add('correct');
+                el.interaction.feedback.innerText = data.feedback.correct;
+                el.interaction.feedback.style.opacity = '1';
+                setTimeout(() => {
+                    closeInteraction();
+                }, 2000);
+            } else {
+                btn.classList.add('wrong');
+                el.interaction.feedback.innerText = data.feedback.wrong;
+                el.interaction.feedback.style.opacity = '1';
+            }
+        };
+        el.interaction.options.appendChild(btn);
+    });
+
+    el.interaction.overlay.style.display = 'flex';
+    setTimeout(() => el.interaction.overlay.classList.add('show'), 10);
+}
+
+function closeInteraction() {
+    el.interaction.overlay.classList.remove('show');
+    setTimeout(() => {
+        el.interaction.overlay.style.display = 'none';
+        state.interactionPending = false;
+        state.isPlaying = true;
+        updatePlayBtn();
+    }, 300);
+}
+
+// 8. 播放控制
+function togglePlay() {
+    if(state.interactionPending) return;
+    state.isPlaying = !state.isPlaying;
+    updatePlayBtn();
+}
+
+function updatePlayBtn() {
+    el.playBtn.innerText = state.isPlaying ? '❚❚' : '▶';
+}
+
+function seek(e) {
+    if(state.interactionPending) return;
+    const rect = el.progressContainer.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = Math.max(0, Math.min(1, x / rect.width));
+    state.currentTime = pct * timelineData.durationSec;
+    
+    // 重置交互状态，允许回看时再次触发
+    timelineData.timeline.forEach(b => b.interactionDone = false);
+    
+    // 强制更新一帧
+    state.currentBeatIndex = -1; 
+    updateStage();
+}
+
+function toggleNarration() {
+    el.narrationPanel.classList.toggle('open');
+}
+
+// 9. 自适应缩放
+function resizeApp() {
+    // 保持 16:9 舞台在视口内完整可见，必要时留黑边
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const targetW = 2560;
+    const targetH = 1440;
+
+    const scale = Math.min(vw / targetW, vh / targetH);
+    el.app.style.transform = `scale(${scale})`;
+}
+
+// 启动
+init();
+
+</script>
+</body>
+</html>
